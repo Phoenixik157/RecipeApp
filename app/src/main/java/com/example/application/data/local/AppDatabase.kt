@@ -19,6 +19,7 @@ import com.example.application.data.local.entity.RecipeIngredientEntity
 import com.example.application.data.local.entity.RecipeTagCrossRef
 import com.example.application.data.local.entity.TagEntity
 import com.example.application.data.local.entity.UserStatsEntity
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [
@@ -56,6 +57,17 @@ abstract class AppDatabase : RoomDatabase() {
                     "recipe_app.db"
                 )
                     .fallbackToDestructiveMigration(dropAllTables = true)
+                    .addCallback(object : RoomDatabase.Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            // ВАЖНО: на момент вызова onCreate БД ещё не создана полностью,
+                            // поэтому берём инстанс через INSTANCE, а не через getInstance.
+                            // Чтобы избежать рекурсии, наполняем после создания.
+                            INSTANCE?.let { database ->
+                                DatabaseSeeder.seed(context, database)
+                            }
+                        }
+                    })
                     .build()
                     .also { INSTANCE = it }
             }
