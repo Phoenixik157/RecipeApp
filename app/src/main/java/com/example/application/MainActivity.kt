@@ -10,7 +10,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.application.data.local.AppDatabase
 import com.example.application.data.local.DatabaseSeeder
-import com.example.application.data.remote.ApiRecipeImporter
 import com.example.application.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,7 +31,6 @@ class MainActivity : AppCompatActivity() {
             DatabaseSeeder.seed(applicationContext, db)
             withContext(Dispatchers.IO) {
                 db.categoryDao().count()
-                ApiRecipeImporter.importInitialRecipes(db)
             }
         }
 
