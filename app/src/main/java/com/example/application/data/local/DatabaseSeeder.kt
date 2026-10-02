@@ -3,21 +3,12 @@ package com.example.application.data.local
 import android.content.Context
 import com.example.application.data.local.entity.CategoryEntity
 import com.example.application.data.local.entity.IngredientEntity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-/**
- * Наполняет БД стартовыми данными при первом создании.
- * Запускается один раз — пока пользователь не удалит приложение.
- */
 object DatabaseSeeder {
 
-    fun seed(context: Context, db: AppDatabase) {
-        CoroutineScope(Dispatchers.IO).launch {
-            seedCategories(db)
-            seedIngredients(db)
-        }
+    suspend fun seed(context: Context, db: AppDatabase) {
+        seedCategories(db)
+        seedIngredients(db)
     }
 
     private suspend fun seedCategories(db: AppDatabase) {
@@ -37,7 +28,6 @@ object DatabaseSeeder {
         if (db.ingredientDao().count() > 0) return
 
         val ingredients = listOf(
-            // Овощи
             IngredientEntity(name = "лук", displayName = "Лук репчатый", emoji = "🧅",
                 synonyms = "лук репчатый|луковица|onion", category = "vegetables"),
             IngredientEntity(name = "морковь", displayName = "Морковь", emoji = "🥕",
@@ -52,8 +42,6 @@ object DatabaseSeeder {
                 synonyms = "garlic", category = "vegetables"),
             IngredientEntity(name = "капуста", displayName = "Капуста", emoji = "🥬",
                 synonyms = "cabbage", category = "vegetables"),
-
-            // Мясо и рыба
             IngredientEntity(name = "курица", displayName = "Курица", emoji = "🍗",
                 synonyms = "куриное филе|курятина|chicken", category = "meat"),
             IngredientEntity(name = "говядина", displayName = "Говядина", emoji = "🥩",
@@ -62,8 +50,6 @@ object DatabaseSeeder {
                 synonyms = "pork", category = "meat"),
             IngredientEntity(name = "лосось", displayName = "Лосось", emoji = "🐟",
                 synonyms = "семга|salmon", category = "meat"),
-
-            // Молочка
             IngredientEntity(name = "молоко", displayName = "Молоко", emoji = "🥛",
                 synonyms = "milk", category = "dairy"),
             IngredientEntity(name = "яйца", displayName = "Яйца", emoji = "🥚",
@@ -76,8 +62,6 @@ object DatabaseSeeder {
                 synonyms = "sour cream", category = "dairy"),
             IngredientEntity(name = "масло сливочное", displayName = "Масло сливочное", emoji = "🧈",
                 synonyms = "butter", category = "dairy"),
-
-            // Бакалея
             IngredientEntity(name = "рис", displayName = "Рис", emoji = "🍚",
                 synonyms = "rice", category = "grocery"),
             IngredientEntity(name = "макароны", displayName = "Макароны", emoji = "🍝",
