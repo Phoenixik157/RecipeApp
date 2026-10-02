@@ -2,25 +2,25 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/nav_home">
 
     <fragment
-        android:id="@+id/homeFragment"
+        android:id="@+id/nav_home"
         android:name="com.example.application.ui.home.HomeFragment"
         android:label="Главная" />
 
     <fragment
-        android:id="@+id/myRecipesFragment"
+        android:id="@+id/nav_myrecipes"
         android:name="com.example.application.ui.myrecipes.MyRecipesFragment"
         android:label="Мои рецепты" />
 
     <fragment
-        android:id="@+id/statsFragment"
+        android:id="@+id/nav_stats"
         android:name="com.example.application.ui.stats.StatsFragment"
         android:label="Статистика" />
 
     <fragment
-        android:id="@+id/settingsFragment"
+        android:id="@+id/nav_settings"
         android:name="com.example.application.ui.settings.SettingsFragment"
         android:label="Настройки" />
 </navigation>
