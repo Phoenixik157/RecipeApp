@@ -12,6 +12,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.R
@@ -34,7 +35,8 @@ class HomeFragment : Fragment() {
         // RecyclerView
         val recycler = view.findViewById<RecyclerView>(R.id.recipesRecycler)
         val adapter = RecipeAdapter { recipe ->
-            // TODO: переход на детальный экран
+            val bundle = Bundle().apply { putLong("recipeId", recipe.id) }
+            findNavController().navigate(R.id.nav_recipe_detail, bundle)
         }
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
