@@ -41,4 +41,7 @@ interface IngredientDao {
 
     @Query("SELECT COUNT(*) FROM ingredients")
     suspend fun count(): Int
+
+    @Query("SELECT * FROM ingredients WHERE name = :name LIMIT 1")
+    suspend fun getByName(name: String): IngredientEntity?
 }
