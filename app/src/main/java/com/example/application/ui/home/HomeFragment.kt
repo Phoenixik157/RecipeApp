@@ -4,12 +4,103 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.application.R
+import com.example.application.viewmodels.HomeViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
+
+    private val viewModel: HomeViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? = inflater.inflate(R.layout.fragment_home, container, false)
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // RecyclerView
+        val recycler = view.findViewById<RecyclerView>(R.id.recipesRecycler)
+        val adapter = RecipeAdapter { recipe ->
+            // TODO: переход на детальный экран
+        }
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+        recycler.adapter = adapter
+
+        // FAB
+        view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
+            // TODO: переход на экран добавления рецепта
+        }
+
+        // Поиск
+        val searchInput = view.findViewById<android.widget.EditText>(R.id.searchInput)
+        searchInput.doOnTextChanged { text, _, _, _ ->
+            viewModel.setSearchQuery(text?.toString().orEmpty())
+        }
+
+        // Подписка на рецепты
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.recipes.collect { list ->
+                    adapter.submitList(list)
+                }
+            }
+        }
+
+        // Подписка на категории — построим чипсы
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.categories.collect { categories ->
+                    buildCategoryChips(view, categories)
+                }
+            }
+        }
+    }
+
+    private fun buildCategoryChips(view: View, categories: List<com.example.application.data.local.entity.CategoryEntity>) {
+        val chipsRow = view.findViewById<LinearLayout>(R.id.chipsRow)
+        chipsRow.removeAllViews()
+
+        // Добавим чипс "Все"
+        chipsRow.addView(createChip("Все", selected = viewModel.selectedCategory.value == null) {
+            viewModel.selectCategory(null)
+        })
+
+        categories.forEach { category ->
+            chipsRow.addView(createChip(category.name, selected = viewModel.selectedCategory.value == category.id) {
+                viewModel.selectCategory(category.id)
+            })
+        }
+    }
+
+    private fun createChip(text: String, selected: Boolean, onClick: () -> Unit): View {
+        val ctx = requireContext()
+        val chip = TextView(ctx).apply {
+            this.text = text
+            textSize = 13f
+            setPadding(40, 20, 40, 20)
+            setTextColor(if (selected) 0xFFFFFFFF.toInt() else 0xFF9E9E9E.toInt())
+            setBackgroundColor(if (selected) 0xFFFF7043.toInt() else 0xFF1E1E1E.toInt())
+            setOnClickListener { onClick() }
+        }
+        val params = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        params.marginEnd = 16
+        chip.layoutParams = params
+        return chip
+    }
 }
