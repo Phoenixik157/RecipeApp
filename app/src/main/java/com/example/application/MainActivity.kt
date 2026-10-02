@@ -18,6 +18,7 @@ import com.example.application.viewmodels.CategoryViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.application.data.remote.ApiRecipeImporter
 
 class MainActivity : AppCompatActivity() {
 
@@ -34,6 +35,10 @@ class MainActivity : AppCompatActivity() {
             DatabaseSeeder.seed(applicationContext, db)
             withContext(Dispatchers.IO) {
                 db.categoryDao().count()
+            }
+            // Загрузка рецептов из TheMealDB (один раз, при первом запуске)
+            withContext(Dispatchers.IO) {
+                ApiRecipeImporter.importInitialRecipes(db)
             }
         }
 
