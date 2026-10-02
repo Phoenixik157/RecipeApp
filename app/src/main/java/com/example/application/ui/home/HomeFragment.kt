@@ -59,27 +59,39 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Подписка на категории — построим чипсы
+        // Подписка на категории — построим чипсы один раз
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.categories.collect { categories ->
-                    buildCategoryChips(view, categories)
+                    buildCategoryChips(view, categories, viewModel.selectedCategory.value)
+                }
+            }
+        }
+
+        // Подписка на выбранную категорию — перерисовываем чипсы при переключении
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.selectedCategory.collect { selectedId ->
+                    buildCategoryChips(view, viewModel.categories.value, selectedId)
                 }
             }
         }
     }
 
-    private fun buildCategoryChips(view: View, categories: List<com.example.application.data.local.entity.CategoryEntity>) {
+    private fun buildCategoryChips(
+        view: View,
+        categories: List<com.example.application.data.local.entity.CategoryEntity>,
+        selectedId: Long?
+    ) {
         val chipsRow = view.findViewById<LinearLayout>(R.id.chipsRow)
         chipsRow.removeAllViews()
 
-        // Добавим чипс "Все"
-        chipsRow.addView(createChip("Все", selected = viewModel.selectedCategory.value == null) {
+        chipsRow.addView(createChip("Все", selected = selectedId == null) {
             viewModel.selectCategory(null)
         })
 
         categories.forEach { category ->
-            chipsRow.addView(createChip(category.name, selected = viewModel.selectedCategory.value == category.id) {
+            chipsRow.addView(createChip(category.name, selected = selectedId == category.id) {
                 viewModel.selectCategory(category.id)
             })
         }
