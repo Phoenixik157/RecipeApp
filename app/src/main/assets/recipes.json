@@ -1,0 +1,489 @@
+[
+  {
+    "title": "Омлет с сыром",
+    "category": "Завтраки",
+    "imageUrl": null,
+    "cookingTimeMinutes": 10,
+    "complexity": 1,
+    "baseServings": 2,
+    "instructions": "1. Взбить яйца с солью.\n2. Натереть сыр на тёрке.\n3. Вылить яйца на разогретую сковороду с маслом.\n4. Посыпать сыром, накрыть крышкой на 2 минуты.\n5. Сложить пополам и подать.",
+    "ingredients": [
+      {"name": "яйца", "quantity": 3, "unit": "шт"},
+      {"name": "сыр", "quantity": 50, "unit": "г"},
+      {"name": "масло сливочное", "quantity": 10, "unit": "г"},
+      {"name": "соль", "quantity": 0, "unit": "по вкусу"}
+    ]
+  },
+  {
+    "title": "Сырники",
+    "category": "Завтраки",
+    "imageUrl": null,
+    "cookingTimeMinutes": 20,
+    "complexity": 1,
+    "baseServings": 3,
+    "instructions": "1. Смешать творог, яйцо, сахар и муку.\n2. Сформировать лепёшки.\n3. Обжарить на среднем огне по 3 минуты с каждой стороны.\n4. Подать со сметаной.",
+    "ingredients": [
+      {"name": "творог", "quantity": 400, "unit": "г"},
+      {"name": "яйца", "quantity": 1, "unit": "шт"},
+      {"name": "мука", "quantity": 4, "unit": "ст.л."},
+      {"name": "сахар", "quantity": 2, "unit": "ст.л."},
+      {"name": "сметана", "quantity": 100, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Овсяная каша с бананом",
+    "category": "Завтраки",
+    "imageUrl": null,
+    "cookingTimeMinutes": 15,
+    "complexity": 1,
+    "baseServings": 2,
+    "instructions": "1. Вскипятить молоко.\n2. Всыпать овсяные хлопья, варить 5 минут, помешивая.\n3. Добавить соль и сахар.\n4. Нарезать банан, выложить в кашу.\n5. Подать горячей.",
+    "ingredients": [
+      {"name": "овсяные хлопья", "quantity": 100, "unit": "г"},
+      {"name": "молоко", "quantity": 400, "unit": "мл"},
+      {"name": "банан", "quantity": 1, "unit": "шт"},
+      {"name": "сахар", "quantity": 1, "unit": "ст.л."},
+      {"name": "соль", "quantity": 0, "unit": "щепотка"}
+    ]
+  },
+  {
+    "title": "Блины классические",
+    "category": "Завтраки",
+    "imageUrl": null,
+    "cookingTimeMinutes": 40,
+    "complexity": 2,
+    "baseServings": 4,
+    "instructions": "1. Взбить яйца с сахаром и солью.\n2. Добавить молоко и муку, размешать до однородности.\n3. Дать тесту постоять 15 минут.\n4. Жарить тонкие блины на раскалённой сковороде.\n5. Подать со сметаной или вареньем.",
+    "ingredients": [
+      {"name": "мука", "quantity": 250, "unit": "г"},
+      {"name": "молоко", "quantity": 500, "unit": "мл"},
+      {"name": "яйца", "quantity": 2, "unit": "шт"},
+      {"name": "сахар", "quantity": 2, "unit": "ст.л."},
+      {"name": "масло растительное", "quantity": 2, "unit": "ст.л."}
+    ]
+  },
+  {
+    "title": "Яичница с помидорами",
+    "category": "Завтраки",
+    "imageUrl": null,
+    "cookingTimeMinutes": 10,
+    "complexity": 1,
+    "baseServings": 1,
+    "instructions": "1. Нарезать помидор кружками.\n2. Обжарить его на масле 2 минуты.\n3. Разбить сверху яйца.\n4. Посолить, накрыть крышкой и готовить 3 минуты.",
+    "ingredients": [
+      {"name": "яйца", "quantity": 2, "unit": "шт"},
+      {"name": "помидор", "quantity": 1, "unit": "шт"},
+      {"name": "масло растительное", "quantity": 1, "unit": "ст.л."},
+      {"name": "соль", "quantity": 0, "unit": "по вкусу"}
+    ]
+  },
+  {
+    "title": "Вафли хрустящие",
+    "category": "Завтраки",
+    "imageUrl": null,
+    "cookingTimeMinutes": 25,
+    "complexity": 2,
+    "baseServings": 4,
+    "instructions": "1. Растопить масло, взбить с яйцами и сахаром.\n2. Влить молоко, всыпать муку с разрыхлителем.\n3. Размешать до однородности.\n4. Выпекать в вафельнице 4-5 минут.\n5. Подать с мёдом или ягодами.",
+    "ingredients": [
+      {"name": "мука", "quantity": 200, "unit": "г"},
+      {"name": "молоко", "quantity": 200, "unit": "мл"},
+      {"name": "яйца", "quantity": 2, "unit": "шт"},
+      {"name": "масло сливочное", "quantity": 100, "unit": "г"},
+      {"name": "сахар", "quantity": 3, "unit": "ст.л."},
+      {"name": "разрыхлитель", "quantity": 1, "unit": "ч.л."}
+    ]
+  },
+  {
+    "title": "Борщ классический",
+    "category": "Супы",
+    "imageUrl": null,
+    "cookingTimeMinutes": 90,
+    "complexity": 2,
+    "baseServings": 4,
+    "instructions": "1. Сварить бульон из мяса.\n2. Обжарить лук и морковь, добавить натёртую свёклу и томатную пасту.\n3. Добавить в бульон нарезанный картофель, капусту и зажарку.\n4. Варить 20 минут.\n5. Добавить чеснок и зелень, дать настояться.",
+    "ingredients": [
+      {"name": "говядина", "quantity": 500, "unit": "г"},
+      {"name": "свекла", "quantity": 2, "unit": "шт"},
+      {"name": "капуста", "quantity": 300, "unit": "г"},
+      {"name": "картофель", "quantity": 4, "unit": "шт"},
+      {"name": "морковь", "quantity": 1, "unit": "шт"},
+      {"name": "лук", "quantity": 1, "unit": "шт"},
+      {"name": "томатная паста", "quantity": 2, "unit": "ст.л."}
+    ]
+  },
+  {
+    "title": "Щи из свежей капусты",
+    "category": "Супы",
+    "imageUrl": null,
+    "cookingTimeMinutes": 60,
+    "complexity": 1,
+    "baseServings": 4,
+    "instructions": "1. Сварить бульон из курицы.\n2. Добавить нарезанный картофель.\n3. Через 10 минут добавить капусту.\n4. Обжарить лук с морковью и добавить в суп.\n5. Варить 15 минут, посолить и подать.",
+    "ingredients": [
+      {"name": "курица", "quantity": 500, "unit": "г"},
+      {"name": "капуста", "quantity": 400, "unit": "г"},
+      {"name": "картофель", "quantity": 3, "unit": "шт"},
+      {"name": "морковь", "quantity": 1, "unit": "шт"},
+      {"name": "лук", "quantity": 1, "unit": "шт"}
+    ]
+  },
+  {
+    "title": "Куриный суп с лапшой",
+    "category": "Супы",
+    "imageUrl": null,
+    "cookingTimeMinutes": 50,
+    "complexity": 1,
+    "baseServings": 4,
+    "instructions": "1. Сварить курицу в воде 30 минут.\n2. Достать мясо, нарезать.\n3. Добавить в бульон картофель и морковь, варить 10 минут.\n4. Добавить лапшу, варить 5 минут.\n5. Вернуть курицу, посолить, посыпать зеленью.",
+    "ingredients": [
+      {"name": "курица", "quantity": 400, "unit": "г"},
+      {"name": "лапша", "quantity": 100, "unit": "г"},
+      {"name": "картофель", "quantity": 3, "unit": "шт"},
+      {"name": "морковь", "quantity": 1, "unit": "шт"},
+      {"name": "лук", "quantity": 1, "unit": "шт"}
+    ]
+  },
+  {
+    "title": "Крем-суп из тыквы",
+    "category": "Супы",
+    "imageUrl": null,
+    "cookingTimeMinutes": 40,
+    "complexity": 2,
+    "baseServings": 3,
+    "instructions": "1. Нарезать тыкву кубиками, лук и чеснок измельчить.\n2. Обжарить лук и чеснок, добавить тыкву, залить водой.\n3. Варить 20 минут до мягкости.\n4. Пробить блендером до однородности.\n5. Влить сливки, посолить, довести до кипения.",
+    "ingredients": [
+      {"name": "тыква", "quantity": 700, "unit": "г"},
+      {"name": "сливки", "quantity": 200, "unit": "мл"},
+      {"name": "лук", "quantity": 1, "unit": "шт"},
+      {"name": "чеснок", "quantity": 2, "unit": "зубчика"},
+      {"name": "соль", "quantity": 0, "unit": "по вкусу"}
+    ]
+  },
+  {
+    "title": "Солянка мясная",
+    "category": "Супы",
+    "imageUrl": null,
+    "cookingTimeMinutes": 90,
+    "complexity": 3,
+    "baseServings": 4,
+    "instructions": "1. Сварить бульон из мяса.\n2. Обжарить лук с томатной пастой.\n3. Добавить в бульон нарезанные огурцы и зажарку.\n4. Варить 15 минут.\n5. Добавить оливки, лимон, зелень, дать настояться.",
+    "ingredients": [
+      {"name": "говядина", "quantity": 400, "unit": "г"},
+      {"name": "колбаса", "quantity": 200, "unit": "г"},
+      {"name": "огурец", "quantity": 3, "unit": "шт"},
+      {"name": "оливки", "quantity": 100, "unit": "г"},
+      {"name": "томатная паста", "quantity": 2, "unit": "ст.л."},
+      {"name": "лимон", "quantity": 1, "unit": "шт"}
+    ]
+  },
+  {
+    "title": "Грибной суп-пюре",
+    "category": "Супы",
+    "imageUrl": null,
+    "cookingTimeMinutes": 40,
+    "complexity": 2,
+    "baseServings": 3,
+    "instructions": "1. Обжарить лук, добавить грибы, готовить 10 минут.\n2. Залить водой, варить 15 минут.\n3. Пробить блендером.\n4. Добавить сливки, посолить, довести до кипения.\n5. Подать с сухариками.",
+    "ingredients": [
+      {"name": "шампиньоны", "quantity": 400, "unit": "г"},
+      {"name": "сливки", "quantity": 200, "unit": "мл"},
+      {"name": "лук", "quantity": 1, "unit": "шт"},
+      {"name": "масло сливочное", "quantity": 30, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Оливье",
+    "category": "Салаты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 40,
+    "complexity": 1,
+    "baseServings": 4,
+    "instructions": "1. Отварить картофель, морковь, яйца.\n2. Нарезать всё кубиками, добавить горошек и огурцы.\n3. Добавить нарезанную колбасу.\n4. Заправить майонезом, посолить.",
+    "ingredients": [
+      {"name": "картофель", "quantity": 4, "unit": "шт"},
+      {"name": "морковь", "quantity": 2, "unit": "шт"},
+      {"name": "яйца", "quantity": 4, "unit": "шт"},
+      {"name": "колбаса", "quantity": 300, "unit": "г"},
+      {"name": "горошек", "quantity": 200, "unit": "г"},
+      {"name": "огурец", "quantity": 3, "unit": "шт"},
+      {"name": "майонез", "quantity": 200, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Греческий салат",
+    "category": "Салаты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 15,
+    "complexity": 1,
+    "baseServings": 2,
+    "instructions": "1. Нарезать помидоры, огурцы, перец крупными кусками.\n2. Добавить оливки и кубики сыра фета.\n3. Посыпать нарезанным луком.\n4. Заправить оливковым маслом и лимонным соком.",
+    "ingredients": [
+      {"name": "помидор", "quantity": 3, "unit": "шт"},
+      {"name": "огурец", "quantity": 2, "unit": "шт"},
+      {"name": "перец болгарский", "quantity": 1, "unit": "шт"},
+      {"name": "сыр фета", "quantity": 150, "unit": "г"},
+      {"name": "оливки", "quantity": 100, "unit": "г"},
+      {"name": "масло оливковое", "quantity": 3, "unit": "ст.л."}
+    ]
+  },
+  {
+    "title": "Цезарь с курицей",
+    "category": "Салаты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 30,
+    "complexity": 2,
+    "baseServings": 2,
+    "instructions": "1. Обжарить курицу, нарезать полосками.\n2. Порвать салат, добавить сухарики.\n3. Смешать майонез, чеснок, лимонный сок — это соус.\n4. Выложить курицу, полить соусом, посыпать сыром.",
+    "ingredients": [
+      {"name": "курица", "quantity": 300, "unit": "г"},
+      {"name": "салат романо", "quantity": 200, "unit": "г"},
+      {"name": "сухарики", "quantity": 100, "unit": "г"},
+      {"name": "сыр пармезан", "quantity": 50, "unit": "г"},
+      {"name": "майонез", "quantity": 100, "unit": "г"},
+      {"name": "чеснок", "quantity": 1, "unit": "зубчик"}
+    ]
+  },
+  {
+    "title": "Винегрет",
+    "category": "Салаты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 50,
+    "complexity": 1,
+    "baseServings": 4,
+    "instructions": "1. Отварить свёклу, картофель, морковь.\n2. Нарезать кубиками, добавить квашеную капусту и горошек.\n3. Нарезать лук.\n4. Заправить маслом, посолить.",
+    "ingredients": [
+      {"name": "свекла", "quantity": 2, "unit": "шт"},
+      {"name": "картофель", "quantity": 3, "unit": "шт"},
+      {"name": "морковь", "quantity": 2, "unit": "шт"},
+      {"name": "капуста квашеная", "quantity": 200, "unit": "г"},
+      {"name": "горошек", "quantity": 150, "unit": "г"},
+      {"name": "лук", "quantity": 1, "unit": "шт"}
+    ]
+  },
+  {
+    "title": "Салат из свежих овощей",
+    "category": "Салаты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 10,
+    "complexity": 1,
+    "baseServings": 2,
+    "instructions": "1. Нарезать помидоры и огурцы.\n2. Добавить нарезанный лук и зелень.\n3. Посолить, заправить маслом.\n4. Перемешать.",
+    "ingredients": [
+      {"name": "помидор", "quantity": 3, "unit": "шт"},
+      {"name": "огурец", "quantity": 2, "unit": "шт"},
+      {"name": "лук", "quantity": 1, "unit": "шт"},
+      {"name": "масло растительное", "quantity": 2, "unit": "ст.л."}
+    ]
+  },
+  {
+    "title": "Мимоза",
+    "category": "Салаты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 40,
+    "complexity": 2,
+    "baseServings": 4,
+    "instructions": "1. Отварить картофель, морковь, яйца.\n2. Натереть на тёрке по отдельности.\n3. Выложить слоями: картофель, рыба, белки, морковь, желтки.\n4. Промазать каждый слой майонезом.",
+    "ingredients": [
+      {"name": "картофель", "quantity": 3, "unit": "шт"},
+      {"name": "морковь", "quantity": 2, "unit": "шт"},
+      {"name": "яйца", "quantity": 4, "unit": "шт"},
+      {"name": "рыба консервированная", "quantity": 200, "unit": "г"},
+      {"name": "майонез", "quantity": 200, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Пельмени домашние",
+    "category": "Основные",
+    "imageUrl": null,
+    "cookingTimeMinutes": 90,
+    "complexity": 3,
+    "baseServings": 4,
+    "instructions": "1. Замесить тесто из муки, яйца, воды и соли.\n2. Смешать фарш с нарезанным луком, посолить.\n3. Раскатать тесто, вырезать кружки.\n4. Выложить фарш, слепить пельмени.\n5. Варить 7 минут в подсоленной воде.",
+    "ingredients": [
+      {"name": "мука", "quantity": 500, "unit": "г"},
+      {"name": "яйца", "quantity": 2, "unit": "шт"},
+      {"name": "фарш", "quantity": 500, "unit": "г"},
+      {"name": "лук", "quantity": 1, "unit": "шт"},
+      {"name": "вода", "quantity": 200, "unit": "мл"}
+    ]
+  },
+  {
+    "title": "Курица с картофелем в духовке",
+    "category": "Основные",
+    "imageUrl": null,
+    "cookingTimeMinutes": 80,
+    "complexity": 2,
+    "baseServings": 4,
+    "instructions": "1. Натереть курицу солью, перцем и специями.\n2. Нарезать картофель, перемешать с маслом.\n3. Выложить всё на противень.\n4. Запекать при 200°C 60 минут.\n5. Подать с зеленью.",
+    "ingredients": [
+      {"name": "курица", "quantity": 1500, "unit": "г"},
+      {"name": "картофель", "quantity": 8, "unit": "шт"},
+      {"name": "масло растительное", "quantity": 3, "unit": "ст.л."},
+      {"name": "специи", "quantity": 0, "unit": "по вкусу"}
+    ]
+  },
+  {
+    "title": "Плов с курицей",
+    "category": "Основные",
+    "imageUrl": null,
+    "cookingTimeMinutes": 60,
+    "complexity": 2,
+    "baseServings": 4,
+    "instructions": "1. Обжарить лук и морковь в казане.\n2. Добавить курицу, обжарить до золотистого цвета.\n3. Всыпать рис, залить водой.\n4. Добавить специи, накрыть крышкой.\n5. Готовить на медленном огне 25 минут.",
+    "ingredients": [
+      {"name": "курица", "quantity": 600, "unit": "г"},
+      {"name": "рис", "quantity": 400, "unit": "г"},
+      {"name": "морковь", "quantity": 3, "unit": "шт"},
+      {"name": "лук", "quantity": 2, "unit": "шт"},
+      {"name": "специи", "quantity": 0, "unit": "по вкусу"}
+    ]
+  },
+  {
+    "title": "Паста Болоньезе",
+    "category": "Основные",
+    "imageUrl": null,
+    "cookingTimeMinutes": 45,
+    "complexity": 2,
+    "baseServings": 3,
+    "instructions": "1. Обжарить лук с чесноком, добавить фарш.\n2. Влить томаты, тушить 20 минут.\n3. Отварить пасту до аль денте.\n4. Смешать с соусом.\n5. Посыпать сыром.",
+    "ingredients": [
+      {"name": "макароны", "quantity": 300, "unit": "г"},
+      {"name": "фарш", "quantity": 400, "unit": "г"},
+      {"name": "помидор", "quantity": 5, "unit": "шт"},
+      {"name": "лук", "quantity": 1, "unit": "шт"},
+      {"name": "чеснок", "quantity": 2, "unit": "зубчика"},
+      {"name": "сыр", "quantity": 80, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Котлеты по-киевски",
+    "category": "Основные",
+    "imageUrl": null,
+    "cookingTimeMinutes": 60,
+    "complexity": 3,
+    "baseServings": 3,
+    "instructions": "1. Отбить куриное филе.\n2. Завернуть внутрь кусочек масла.\n3. Обмакнуть в яйцо и панировочные сухари.\n4. Обжарить до золотистой корочки.\n5. Довести до готовности в духовке 15 минут.",
+    "ingredients": [
+      {"name": "курица", "quantity": 600, "unit": "г"},
+      {"name": "масло сливочное", "quantity": 100, "unit": "г"},
+      {"name": "яйца", "quantity": 2, "unit": "шт"},
+      {"name": "сухари панировочные", "quantity": 150, "unit": "г"},
+      {"name": "мука", "quantity": 100, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Жаркое по-домашнему",
+    "category": "Основные",
+    "imageUrl": null,
+    "cookingTimeMinutes": 90,
+    "complexity": 2,
+    "baseServings": 4,
+    "instructions": "1. Обжарить мясо до корочки.\n2. Добавить лук, морковь.\n3. Влить воду, тушить 40 минут.\n4. Добавить картофель, тушить 30 минут.\n5. Посыпать зеленью.",
+    "ingredients": [
+      {"name": "говядина", "quantity": 600, "unit": "г"},
+      {"name": "картофель", "quantity": 6, "unit": "шт"},
+      {"name": "морковь", "quantity": 2, "unit": "шт"},
+      {"name": "лук", "quantity": 1, "unit": "шт"},
+      {"name": "томатная паста", "quantity": 2, "unit": "ст.л."}
+    ]
+  },
+  {
+    "title": "Шарлотка с яблоками",
+    "category": "Десерты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 50,
+    "complexity": 1,
+    "baseServings": 6,
+    "instructions": "1. Взбить яйца с сахаром.\n2. Добавить муку, размешать.\n3. Нарезать яблоки, выложить в форму.\n4. Залить тестом.\n5. Выпекать при 180°C 35 минут.",
+    "ingredients": [
+      {"name": "яблоко", "quantity": 4, "unit": "шт"},
+      {"name": "яйца", "quantity": 4, "unit": "шт"},
+      {"name": "сахар", "quantity": 200, "unit": "г"},
+      {"name": "мука", "quantity": 200, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Тирамису",
+    "category": "Десерты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 30,
+    "complexity": 3,
+    "baseServings": 6,
+    "instructions": "1. Взбить желтки с сахаром, добавить маскарпоне.\n2. Взбить белки отдельно, аккуратно вмешать.\n3. Обмакнуть савоярди в кофе.\n4. Выложить слоями: печенье, крем, печенье, крем.\n5. Посыпать какао, охладить 4 часа.",
+    "ingredients": [
+      {"name": "маскарпоне", "quantity": 500, "unit": "г"},
+      {"name": "яйца", "quantity": 4, "unit": "шт"},
+      {"name": "сахар", "quantity": 100, "unit": "г"},
+      {"name": "печенье савоярди", "quantity": 200, "unit": "г"},
+      {"name": "кофе", "quantity": 200, "unit": "мл"},
+      {"name": "какао", "quantity": 2, "unit": "ст.л."}
+    ]
+  },
+  {
+    "title": "Панкейки с черникой",
+    "category": "Десерты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 25,
+    "complexity": 1,
+    "baseServings": 3,
+    "instructions": "1. Смешать муку, сахар, разрыхлитель.\n2. Добавить молоко и яйцо, размешать.\n3. Вылить тесто на сковороду небольшими порциями.\n4. Обжарить до пузырьков, перевернуть.\n5. Подать с черникой и мёдом.",
+    "ingredients": [
+      {"name": "мука", "quantity": 200, "unit": "г"},
+      {"name": "молоко", "quantity": 200, "unit": "мл"},
+      {"name": "яйца", "quantity": 1, "unit": "шт"},
+      {"name": "сахар", "quantity": 2, "unit": "ст.л."},
+      {"name": "черника", "quantity": 150, "unit": "г"},
+      {"name": "разрыхлитель", "quantity": 1, "unit": "ч.л."}
+    ]
+  },
+  {
+    "title": "Медовик",
+    "category": "Десерты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 120,
+    "complexity": 3,
+    "baseServings": 8,
+    "instructions": "1. Растопить мёд с маслом и сахаром, добавить яйца и соду.\n2. Всыпать муку, замесить тесто.\n3. Разделить на 8 частей, раскатать и испечь коржи.\n4. Взбить сметану с сахаром для крема.\n5. Промазать коржи кремом, дать пропитаться 6 часов.",
+    "ingredients": [
+      {"name": "мука", "quantity": 500, "unit": "г"},
+      {"name": "мёд", "quantity": 100, "unit": "г"},
+      {"name": "сахар", "quantity": 200, "unit": "г"},
+      {"name": "яйца", "quantity": 3, "unit": "шт"},
+      {"name": "сметана", "quantity": 800, "unit": "г"},
+      {"name": "масло сливочное", "quantity": 100, "unit": "г"}
+    ]
+  },
+  {
+    "title": "Чизкейк",
+    "category": "Десерты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 90,
+    "complexity": 3,
+    "baseServings": 8,
+    "instructions": "1. Измельчить печенье, смешать с растопленным маслом, утрамбовать в форму.\n2. Взбить творожный сыр с сахаром и яйцами.\n3. Вылить на основу.\n4. Выпекать при 160°C 60 минут.\n5. Остудить, украсить ягодами.",
+    "ingredients": [
+      {"name": "печенье", "quantity": 200, "unit": "г"},
+      {"name": "масло сливочное", "quantity": 100, "unit": "г"},
+      {"name": "творожный сыр", "quantity": 600, "unit": "г"},
+      {"name": "сахар", "quantity": 150, "unit": "г"},
+      {"name": "яйца", "quantity": 3, "unit": "шт"}
+    ]
+  },
+  {
+    "title": "Брауни",
+    "category": "Десерты",
+    "imageUrl": null,
+    "cookingTimeMinutes": 45,
+    "complexity": 2,
+    "baseServings": 6,
+    "instructions": "1. Растопить шоколад с маслом.\n2. Взбить яйца с сахаром.\n3. Смешать всё, добавить муку.\n4. Вылить в форму.\n5. Выпекать при 180°C 25 минут.",
+    "ingredients": [
+      {"name": "шоколад тёмный", "quantity": 200, "unit": "г"},
+      {"name": "масло сливочное", "quantity": 150, "unit": "г"},
+      {"name": "яйца", "quantity": 3, "unit": "шт"},
+      {"name": "сахар", "quantity": 150, "unit": "г"},
+      {"name": "мука", "quantity": 100, "unit": "г"}
+    ]
+  }
+]

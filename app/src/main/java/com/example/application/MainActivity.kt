@@ -14,6 +14,7 @@ import com.example.application.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.application.data.local.RecipeJsonImporter
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,7 +31,7 @@ class MainActivity : AppCompatActivity() {
             val db = AppDatabase.getInstance(applicationContext)
             DatabaseSeeder.seed(applicationContext, db)
             withContext(Dispatchers.IO) {
-                db.categoryDao().count()
+                RecipeJsonImporter.importFromJson(applicationContext, db)
             }
         }
 
