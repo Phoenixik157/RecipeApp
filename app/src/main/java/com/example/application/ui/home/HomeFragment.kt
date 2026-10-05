@@ -34,10 +34,12 @@ class HomeFragment : Fragment() {
 
         // RecyclerView
         val recycler = view.findViewById<RecyclerView>(R.id.recipesRecycler)
-        val adapter = RecipeAdapter { recipe ->
-            val bundle = Bundle().apply { putLong("recipeId", recipe.id) }
-            findNavController().navigate(R.id.nav_recipe_detail, bundle)
-        }
+        val adapter = RecipeAdapter(
+            onClick = { recipe ->
+                val bundle = Bundle().apply { putLong("recipeId", recipe.id) }
+                findNavController().navigate(R.id.nav_recipe_detail, bundle)
+            }
+        )
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 

@@ -143,5 +143,51 @@ class AddRecipeFragment : Fragment() {
                 }
             }
         }
+
+        val editId = arguments?.getLong("recipeId", -1L) ?: -1L
+        if (editId > 0) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                kotlinx.coroutines.delay(300)
+                val recipe = viewModel.loadForEdit(editId) ?: return@launch
+
+                view.findViewById<EditText>(R.id.inputTitle).setText(recipe.title)
+                view.findViewById<EditText>(R.id.inputTime).setText(recipe.cookingTimeMinutes.toString())
+                view.findViewById<EditText>(R.id.inputInstructions).setText(recipe.instructions)
+
+                currentDifficulty = recipe.complexity
+                currentServings = recipe.baseServings
+                servingsText.text = currentServings.toString()
+                updateDiffUI()
+
+                val idx = categoriesIds.indexOf(recipe.categoryId)
+                if (idx >= 0) spinner.setSelection(idx)
+
+                val db = com.example.application.data.local.AppDatabase.getInstance(requireContext())
+                val links = db.recipeIngredientDao().getByRecipeId(editId)
+                val ids = links.map { it.ingredientId }
+                val ings = db.ingredientDao().getByIds(ids)
+                val map = ings.associateBy { it.id }
+
+                ingredientsContainer.removeAllViews()
+                ingredientRows.clear()
+
+                links.forEach { link ->
+                    val row = layoutInflater.inflate(R.layout.item_ingredient_row, ingredientsContainer, false)
+                    val ing = map[link.ingredientId]
+                    if (ing != null) {
+                        row.findViewById<EditText>(R.id.ingName).setText(ing.displayName)
+                        val qtyStr = if (link.quantity % 1.0 == 0.0) link.quantity.toInt().toString() else link.quantity.toString()
+                        row.findViewById<EditText>(R.id.ingQty).setText(qtyStr)
+                        row.findViewById<EditText>(R.id.ingUnit).setText(link.unit)
+                    }
+                    row.findViewById<TextView>(R.id.deleteBtn).setOnClickListener {
+                        ingredientsContainer.removeView(row)
+                        ingredientRows.remove(row)
+                    }
+                    ingredientsContainer.addView(row)
+                    ingredientRows.add(row)
+                }
+            }
+        }
     }
 }

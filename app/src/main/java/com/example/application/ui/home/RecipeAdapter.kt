@@ -11,7 +11,8 @@ import com.example.application.R
 import com.example.application.data.local.entity.RecipeEntity
 
 class RecipeAdapter(
-    private val onClick: (RecipeEntity) -> Unit
+    private val onClick: (RecipeEntity) -> Unit,
+    private val onLongClick: ((RecipeEntity) -> Unit)? = null
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
     private var items: List<RecipeEntity> = emptyList()
@@ -65,6 +66,12 @@ class RecipeAdapter(
             missing.visibility = View.GONE   // пока не считаем
 
             itemView.setOnClickListener { onClick(recipe) }
+            onLongClick?.let { callback ->
+                itemView.setOnLongClickListener {
+                    callback(recipe)
+                    true
+                }
+            }
         }
     }
 }
