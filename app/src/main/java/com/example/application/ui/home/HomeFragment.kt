@@ -43,7 +43,7 @@ class HomeFragment : Fragment() {
 
         // FAB
         view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
-            // TODO: переход на экран добавления рецепта
+            findNavController().navigate(R.id.nav_add_recipe)
         }
 
         // Поиск

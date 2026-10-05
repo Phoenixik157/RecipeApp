@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="6dp"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/ingName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2.5"
+        android:background="#1E1E1E"
+        android:hint="Название"
+        android:inputType="text"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#9E9E9E"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/ingQty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.2"
+        android:layout_marginStart="6dp"
+        android:background="#1E1E1E"
+        android:hint="Кол-во"
+        android:inputType="numberDecimal"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#9E9E9E"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/ingUnit"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="6dp"
+        android:background="#1E1E1E"
+        android:hint="Ед."
+        android:inputType="text"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#9E9E9E"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/deleteBtn"
+        android:layout_width="38dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="6dp"
+        android:background="#1E1E1E"
+        android:gravity="center"
+        android:text="🗑"
+        android:textSize="16sp" />
+</LinearLayout>
