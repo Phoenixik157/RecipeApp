@@ -20,6 +20,9 @@ import com.example.application.data.local.entity.RecipeTagCrossRef
 import com.example.application.data.local.entity.TagEntity
 import com.example.application.data.local.entity.UserStatsEntity
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.application.data.local.dao.UserProductDao
+import com.example.application.data.local.entity.UserProductEntity
+
 
 @Database(
     entities = [
@@ -30,9 +33,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         TagEntity::class,
         RecipeTagCrossRef::class,
         UserStatsEntity::class,
-        CookingHistoryEntity::class
+        CookingHistoryEntity::class,
+        UserProductEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -44,6 +48,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun tagDao(): TagDao
     abstract fun userStatsDao(): UserStatsDao
     abstract fun cookingHistoryDao(): CookingHistoryDao
+    abstract fun userProductDao(): UserProductDao
 
     companion object {
         @Volatile
