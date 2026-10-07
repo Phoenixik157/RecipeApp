@@ -47,4 +47,7 @@ interface IngredientDao {
 
     @Query("SELECT * FROM ingredients WHERE id IN (:ids)")
     suspend fun getByIds(ids: List<Long>): List<IngredientEntity>
+
+    @Query("SELECT * FROM ingredients ORDER BY displayName ASC")
+    suspend fun getAllOnce(): List<IngredientEntity>
 }

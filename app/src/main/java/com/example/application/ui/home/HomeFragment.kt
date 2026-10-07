@@ -43,6 +43,62 @@ class HomeFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        // Ряд продуктов + кнопка "Добавить"
+        val ingredientsRow = view.findViewById<LinearLayout>(R.id.ingredientsRow)
+        val popular = listOf(
+            Triple("🥚", "Яйца", "яйца"),
+            Triple("🥛", "Молоко", "молоко"),
+            Triple("🧅", "Лук", "лук"),
+            Triple("🍅", "Помидор", "помидор"),
+            Triple("🥩", "Мясо", "говядина")
+        )
+        popular.forEach { (emoji, label, _) ->
+            val item = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.VERTICAL
+                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                setPadding(0, 0, 24, 0)
+            }
+            val iconBox = TextView(requireContext()).apply {
+                text = emoji
+                textSize = 24f
+                gravity = android.view.Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(104, 104)
+                setBackgroundColor(0xFF1E1E1E.toInt())
+            }
+            val text = TextView(requireContext()).apply {
+                text = label
+                textSize = 11f
+                setTextColor(0xFF9E9E9E.toInt())
+                gravity = android.view.Gravity.CENTER
+            }
+            item.addView(iconBox)
+            item.addView(text)
+            ingredientsRow.addView(item)
+        }
+
+        val addBtn = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = android.view.Gravity.CENTER_HORIZONTAL
+        }
+        val addIcon = TextView(requireContext()).apply {
+            text = "+"
+            textSize = 22f
+            setTextColor(0xFFFFFFFF.toInt())
+            gravity = android.view.Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(104, 104)
+            setBackgroundColor(0xFFFF7043.toInt())
+        }
+        val addLabel = TextView(requireContext()).apply {
+            text = "Добавить"
+            textSize = 11f
+            setTextColor(0xFFFF7043.toInt())
+            gravity = android.view.Gravity.CENTER
+        }
+        addBtn.addView(addIcon)
+        addBtn.addView(addLabel)
+        addBtn.setOnClickListener { openProductsSheet() }
+        ingredientsRow.addView(addBtn)
+
         // FAB
         view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
             findNavController().navigate(R.id.nav_add_recipe)
@@ -118,5 +174,15 @@ class HomeFragment : Fragment() {
         params.marginEnd = 16
         chip.layoutParams = params
         return chip
+    }
+
+    private fun openProductsSheet() {
+        val sheet = ProductsBottomSheet()
+        sheet.setOnDoneListener {
+            // Когда пользователь нажал «Показать рецепты» — обновляем главный экран.
+            // Пока просто очищаем поиск, чтобы заново запросить данные из БД.
+            viewModel.setSearchQuery("")
+        }
+        sheet.show(parentFragmentManager, "ProductsBottomSheet")
     }
 }
