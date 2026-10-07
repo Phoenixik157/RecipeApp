@@ -33,6 +33,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _minPurchasesMode = MutableStateFlow(false)
     val minPurchasesMode: StateFlow<Boolean> = _minPurchasesMode
 
+    /** Есть ли у пользователя отмеченные продукты вообще. */
+    private val _userHasProducts = MutableStateFlow(false)
+    val userHasProducts: StateFlow<Boolean> = _userHasProducts
+
     // Все рецепты + посчитанные «не хватает»
     private val _allRecipesWithMissing = MutableStateFlow<List<RecipeWithMissing>>(emptyList())
 
@@ -46,16 +50,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val recipes: StateFlow<List<RecipeWithMissing>> = combine(
         _allRecipesWithMissing,
         _selectedCategory,
-        _searchQuery
-    ) { all, categoryId, query ->
+        _searchQuery,
+        _minPurchasesMode
+    ) { all, categoryId, query, minMode ->
         val filtered = all.filter { item ->
             val r = item.recipe
             val matchesCategory = categoryId == null || r.categoryId == categoryId
             val matchesQuery = query.isEmpty() || r.title.contains(query, true)
             matchesCategory && matchesQuery
         }
-        // Если включен режим «минимум покупок» — сортируем по missingCount
-        if (_minPurchasesMode.value) {
+        if (minMode) {
             filtered.sortedBy { it.missingCount }
         } else {
             filtered
@@ -70,7 +74,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun recalculateMissing() {
         viewModelScope.launch {
             val userIngredientIds = db.userProductDao().getAllIds().toSet()
-            _minPurchasesMode.value = userIngredientIds.isNotEmpty()
+            val hadProducts = _userHasProducts.value
+            _userHasProducts.value = userIngredientIds.isNotEmpty()
+
+            // Если продуктов не было — выключаем режим.
+            // Если продуктов не было, а теперь появились — включаем автоматически.
+            if (!_userHasProducts.value) {
+                _minPurchasesMode.value = false
+            } else if (!hadProducts) {
+                _minPurchasesMode.value = true
+            }
+            // Если продукты уже были — оставляем текущее состояние (вкл или выкл).
 
             val allRecipes = db.recipeDao().getAllOnce()
             val allLinks = db.recipeIngredientDao().getAllOnce()
@@ -80,10 +94,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val links = linksByRecipe[recipe.id].orEmpty()
                 val total = links.size
                 val have = links.count { it.ingredientId in userIngredientIds }
-                val missing = total - have
-                RecipeWithMissing(recipe, missing, total)
+                RecipeWithMissing(recipe, total - have, total)
             }
             _allRecipesWithMissing.value = list
+        }
+    }
+
+    /** Переключение режима вручную (по клику на чипс). */
+    fun toggleMinPurchasesMode() {
+        if (_userHasProducts.value) {
+            _minPurchasesMode.value = !_minPurchasesMode.value
         }
     }
 

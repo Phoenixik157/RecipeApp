@@ -110,6 +110,11 @@ class HomeFragment : Fragment() {
             viewModel.setSearchQuery(text?.toString().orEmpty())
         }
 
+        // Клик по чипсу минимум покупок
+        view.findViewById<TextView>(R.id.minPurchasesChip).setOnClickListener {
+            viewModel.toggleMinPurchasesMode()
+        }
+
         // Подписка на рецепты
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -140,9 +145,24 @@ class HomeFragment : Fragment() {
         // Подписка на режим «Минимум покупок» — показ/скрытие чипса
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.minPurchasesMode.collect { enabled ->
+                viewModel.userHasProducts.collect { has ->
                     view.findViewById<TextView>(R.id.minPurchasesChip).visibility =
-                        if (enabled) View.VISIBLE else View.GONE
+                        if (has) View.VISIBLE else View.GONE
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.minPurchasesMode.collect { active ->
+                    val chip = view.findViewById<TextView>(R.id.minPurchasesChip)
+                    // Активный — залитый оранжевым. Неактивный — обводка оранжевая, фон прозрачный.
+                    chip.setBackgroundColor(
+                        if (active) 0xFFFF7043.toInt() else 0x26FF7043.toInt()
+                    )
+                    chip.setTextColor(
+                        if (active) 0xFFFFFFFF.toInt() else 0xFFFF7043.toInt()
+                    )
                 }
             }
         }
