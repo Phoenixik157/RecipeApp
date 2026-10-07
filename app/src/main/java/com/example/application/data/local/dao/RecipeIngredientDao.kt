@@ -44,4 +44,7 @@ interface RecipeIngredientDao {
 
     @Query("SELECT COUNT(*) FROM recipe_ingredients WHERE recipeId = :recipeId")
     suspend fun countIngredients(recipeId: Long): Int
+
+    @Query("SELECT * FROM recipe_ingredients")
+    suspend fun getAllOnce(): List<RecipeIngredientEntity>
 }

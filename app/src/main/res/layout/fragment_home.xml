@@ -186,6 +186,21 @@
                     android:orientation="horizontal" />
             </HorizontalScrollView>
 
+            <TextView
+                android:id="@+id/minPurchasesChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="8dp"
+                android:background="#26FF7043"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="🛒 Минимум покупок"
+                android:textColor="#FF7043"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
             <!-- Список рецептов -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recipesRecycler"

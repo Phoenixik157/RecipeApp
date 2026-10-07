@@ -15,9 +15,9 @@ class RecipeAdapter(
     private val onLongClick: ((RecipeEntity) -> Unit)? = null
 ) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
 
-    private var items: List<RecipeEntity> = emptyList()
+    private var items: List<com.example.application.viewmodels.RecipeWithMissing> = emptyList()
 
-    fun submitList(newItems: List<RecipeEntity>) {
+    fun submitList(newItems: List<com.example.application.viewmodels.RecipeWithMissing>) {
         items = newItems
         notifyDataSetChanged()
     }
@@ -29,7 +29,8 @@ class RecipeAdapter(
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
-        holder.bind(items[position])
+        val item = items[position]
+        holder.bind(item.recipe, item.missingCount)
     }
 
     override fun getItemCount(): Int = items.size
@@ -43,18 +44,16 @@ class RecipeAdapter(
         private val dot3: View = itemView.findViewById(R.id.dot3)
         private val missing: TextView = itemView.findViewById(R.id.missingChip)
 
-        fun bind(recipe: RecipeEntity) {
+        fun bind(recipe: RecipeEntity, missingCount: Int) {
             title.text = recipe.title
             time.text = "⏱ ${recipe.cookingTimeMinutes} мин"
 
-            // Загрузка фото через Coil
             if (!recipe.imageUrl.isNullOrEmpty()) {
                 image.load(recipe.imageUrl)
             } else {
                 image.setImageDrawable(null)
             }
 
-            // Сложность
             val dots = listOf(dot1, dot2, dot3)
             dots.forEachIndexed { i, dot ->
                 dot.setBackgroundColor(
@@ -62,8 +61,13 @@ class RecipeAdapter(
                 )
             }
 
-            // Чипс "не хватает"
-            missing.visibility = View.GONE   // пока не считаем
+            // Чипс «Не хватает: N ингр.»
+            if (missingCount > 0) {
+                missing.visibility = View.VISIBLE
+                missing.text = "Не хватает: $missingCount ингр."
+            } else {
+                missing.visibility = View.GONE
+            }
 
             itemView.setOnClickListener { onClick(recipe) }
             onLongClick?.let { callback ->

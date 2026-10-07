@@ -136,6 +136,16 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
+        // Подписка на режим «Минимум покупок» — показ/скрытие чипса
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.minPurchasesMode.collect { enabled ->
+                    view.findViewById<TextView>(R.id.minPurchasesChip).visibility =
+                        if (enabled) View.VISIBLE else View.GONE
+                }
+            }
+        }
     }
 
     private fun buildCategoryChips(
@@ -179,9 +189,7 @@ class HomeFragment : Fragment() {
     private fun openProductsSheet() {
         val sheet = ProductsBottomSheet()
         sheet.setOnDoneListener {
-            // Когда пользователь нажал «Показать рецепты» — обновляем главный экран.
-            // Пока просто очищаем поиск, чтобы заново запросить данные из БД.
-            viewModel.setSearchQuery("")
+            viewModel.recalculateMissing()
         }
         sheet.show(parentFragmentManager, "ProductsBottomSheet")
     }

@@ -23,6 +23,7 @@ import com.example.application.ui.home.RecipeAdapter
 import com.example.application.viewmodels.MyRecipesViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
+import com.example.application.viewmodels.RecipeWithMissing
 
 class MyRecipesFragment : Fragment() {
 
@@ -62,7 +63,15 @@ class MyRecipesFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.recipes.collect { list ->
-                    adapter.submitList(list)
+                    adapter.submitList(
+                        list.map {
+                            RecipeWithMissing(
+                                recipe = it,
+                                missingCount = 0,
+                                totalCount = 0
+                            )
+                        }
+                    )
                     countText.text = "Всего: ${list.size}"
                     if (list.isEmpty()) {
                         emptyState.visibility = View.VISIBLE

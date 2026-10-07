@@ -50,4 +50,7 @@ interface RecipeDao {
 
     @Query("DELETE FROM recipes WHERE isUserRecipe = 0")
     suspend fun deleteAllApiRecipes()
+
+    @Query("SELECT * FROM recipes ORDER BY title ASC")
+    suspend fun getAllOnce(): List<RecipeEntity>
 }
