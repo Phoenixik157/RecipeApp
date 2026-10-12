@@ -27,4 +27,7 @@ interface UserProductDao {
 
     @Query("SELECT COUNT(*) FROM user_products")
     fun countFlow(): Flow<Int>
+
+    @Query("SELECT ingredientId FROM user_products")
+    suspend fun getAllIdsOnce(): List<Long>
 }

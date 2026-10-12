@@ -13,7 +13,8 @@ import kotlinx.coroutines.launch
 data class IngredientWithQty(
     val ingredient: IngredientEntity,
     val quantity: Double,
-    val unit: String
+    val unit: String,
+    val haveIt: Boolean      // есть ли у пользователя в холодильнике
 )
 
 class RecipeDetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -34,18 +35,26 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
     fun load(recipeId: Long) {
         if (loaded) return
         loaded = true
+
         viewModelScope.launch {
             val recipe = db.recipeDao().getById(recipeId) ?: return@launch
             _recipe.value = recipe
             _servings.value = recipe.baseServings
 
+            val userIds = db.userProductDao().getAllIdsOnce().toSet()
             val links = db.recipeIngredientDao().getByRecipeId(recipeId)
             val ingIds = links.map { it.ingredientId }
             val ings = db.ingredientDao().getByIds(ingIds)
             val map = ings.associateBy { it.id }
+
             _ingredients.value = links.mapNotNull { link ->
                 map[link.ingredientId]?.let { ing ->
-                    IngredientWithQty(ing, link.quantity, link.unit)
+                    IngredientWithQty(
+                        ingredient = ing,
+                        quantity = link.quantity,
+                        unit = link.unit,
+                        haveIt = link.ingredientId in userIds
+                    )
                 }
             }
         }

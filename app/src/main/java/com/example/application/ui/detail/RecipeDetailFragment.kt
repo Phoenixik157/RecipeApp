@@ -101,10 +101,12 @@ class RecipeDetailFragment : Fragment() {
                 gravity = Gravity.CENTER_VERTICAL
                 setPadding(40, 40, 40, 40)
             }
+
             val emoji = TextView(requireContext()).apply {
                 text = item.ingredient.emoji
                 textSize = 20f
             }
+
             val name = TextView(requireContext()).apply {
                 text = item.ingredient.displayName
                 setTextColor(0xFFFFFFFF.toInt())
@@ -112,17 +114,28 @@ class RecipeDetailFragment : Fragment() {
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                 setPadding(28, 0, 0, 0)
             }
+
             val qty = (item.quantity * ratio).let {
                 if (it % 1.0 == 0.0) it.toInt().toString() else "%.1f".format(it)
             }
+
             val measure = TextView(requireContext()).apply {
                 text = if (item.quantity > 0) "$qty ${item.unit}" else item.unit
                 setTextColor(0xFF9E9E9E.toInt())
                 textSize = 13f
+                setPadding(0, 0, 20, 0)
             }
+
+            // Статус: есть / нет
+            val status = TextView(requireContext()).apply {
+                text = if (item.haveIt) "✅" else "❌"
+                textSize = 18f
+            }
+
             row.addView(emoji)
             row.addView(name)
             row.addView(measure)
+            row.addView(status)
             container.addView(row)
 
             if (idx < list.size - 1) {
