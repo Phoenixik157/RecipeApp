@@ -109,4 +109,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectCategory(id: Long?) { _selectedCategory.value = id }
     fun setSearchQuery(q: String) { _searchQuery.value = q }
+
+    val userStats: kotlinx.coroutines.flow.StateFlow<com.example.application.data.local.entity.UserStatsEntity?> =
+        db.userStatsDao().observe()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 }

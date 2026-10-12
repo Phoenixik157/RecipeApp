@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.application.data.local.RecipeJsonImporter
+import com.example.application.utils.XpManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val db = AppDatabase.getInstance(applicationContext)
             DatabaseSeeder.seed(applicationContext, db)
+            XpManager.award(db, XpManager.ACTION_DAILY_LOGIN)
             withContext(Dispatchers.IO) {
                 RecipeJsonImporter.importFromJson(applicationContext, db)
             }

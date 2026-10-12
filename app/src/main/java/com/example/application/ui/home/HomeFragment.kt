@@ -124,6 +124,31 @@ class HomeFragment : Fragment() {
             }
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.userStats.collect { stats ->
+                    val s = stats ?: com.example.application.data.local.entity.UserStatsEntity()
+
+                    // Название уровня
+                    view.findViewById<TextView>(R.id.levelBadge).text =
+                        "🔥 ${com.example.application.utils.XpManager.levelName(s.level)} ${s.level} ур."
+
+                    // Прогресс уровня
+                    val (inLevel, levelRange, _) =
+                        com.example.application.utils.XpManager.progressFor(s)
+                    view.findViewById<TextView>(R.id.xpCurrent).text = "$inLevel XP"
+                    view.findViewById<TextView>(R.id.xpTotal).text = "$levelRange XP"
+                    val progress = if (levelRange > 0) (inLevel * 100) / levelRange else 0
+                    view.findViewById<android.widget.ProgressBar>(R.id.xpProgress).progress = progress
+
+                    // Дневной лимит
+                    val dailyMax = com.example.application.utils.XpManager.dailyMaxXp()
+                    view.findViewById<TextView>(R.id.xpTodayText).text =
+                        "Сегодня: +${s.dailyXpGained}/$dailyMax XP"
+                }
+            }
+        }
+
         // Подписка на категории — построим чипсы один раз
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
