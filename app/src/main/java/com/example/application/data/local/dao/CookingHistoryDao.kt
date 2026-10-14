@@ -23,4 +23,13 @@ interface CookingHistoryDao {
 
     @Query("DELETE FROM cooking_history")
     suspend fun clear()
+
+    @Query("""
+    SELECT COUNT(DISTINCT r.categoryId) FROM cooking_history ch
+    INNER JOIN recipes r ON r.id = ch.recipeId
+""")
+    suspend fun distinctCategoriesOnce(): Int
+
+    @Query("SELECT COUNT(DISTINCT cookedAt / 86400000) FROM cooking_history")
+    suspend fun distinctDaysOnce(): Int
 }

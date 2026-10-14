@@ -50,7 +50,7 @@ class RecipeDetailFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 val xp = viewModel.awardCooked(recipe.id, viewModel.servings.value)
                 val msg = if (xp > 0) "Приготовлено! +$xp XP" else "Записано. Лимит XP на сегодня исчерпан"
-                android.widget.Toast.makeText(requireContext(), msg, android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), msg, android.widget.Toast.LENGTH_SHORT).show()
             }
         }
 

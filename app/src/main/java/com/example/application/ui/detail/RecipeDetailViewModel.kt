@@ -9,6 +9,9 @@ import com.example.application.data.local.entity.RecipeEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.application.utils.XpManager
+import com.example.application.data.local.entity.CookingHistoryEntity
+import com.example.application.utils.AchievementManager
 
 data class IngredientWithQty(
     val ingredient: IngredientEntity,
@@ -65,24 +68,25 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
 
     fun awardView() {
         viewModelScope.launch {
-            com.example.application.utils.XpManager.award(db, com.example.application.utils.XpManager.ACTION_VIEW_RECIPE)
+            XpManager.award(db, XpManager.ACTION_VIEW_RECIPE)
         }
     }
 
     suspend fun awardCooked(recipeId: Long, servings: Int): Int {
-        val xp = com.example.application.utils.XpManager.award(
+        val xp = XpManager.award(
             db,
-            com.example.application.utils.XpManager.ACTION_COOKED
+            XpManager.ACTION_COOKED
         )
         if (xp > 0) {
             db.cookingHistoryDao().insert(
-                com.example.application.data.local.entity.CookingHistoryEntity(
+                CookingHistoryEntity(
                     recipeId = recipeId,
                     servings = servings,
                     xpEarned = xp
                 )
             )
         }
+        AchievementManager.checkAll(db)
         return xp
     }
 }

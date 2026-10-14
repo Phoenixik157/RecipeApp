@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.application.utils.XpManager
+import com.example.application.utils.AchievementManager
 
 /** Строка ингредиента в форме. */
 data class IngredientRow(
@@ -104,7 +105,7 @@ class AddRecipeViewModel(application: Application) : AndroidViewModel(applicatio
             if (editingRecipeId == null) {
                 XpManager.award(db, XpManager.ACTION_CREATE_RECIPE)
             }
-
+            AchievementManager.checkAll(db)
             _saved.value = true
         }
     }

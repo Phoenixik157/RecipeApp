@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import com.example.application.utils.AchievementManager
+import com.example.application.utils.XpManager
 
 data class RecipeWithMissing(
     val recipe: RecipeEntity,
@@ -107,10 +109,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             _minPurchasesMode.value = newValue
             if (newValue) {
                 viewModelScope.launch {
-                    com.example.application.utils.XpManager.award(
+                    XpManager.award(
                         db,
-                        com.example.application.utils.XpManager.ACTION_MIN_PURCHASES
+                        XpManager.ACTION_MIN_PURCHASES
                     )
+                    AchievementManager.checkAll(db)
                 }
             }
         }

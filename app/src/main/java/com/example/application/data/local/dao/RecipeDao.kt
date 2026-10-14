@@ -53,4 +53,7 @@ interface RecipeDao {
 
     @Query("SELECT * FROM recipes ORDER BY title ASC")
     suspend fun getAllOnce(): List<RecipeEntity>
+
+    @Query("SELECT COUNT(*) FROM recipes WHERE isUserRecipe = 1")
+    suspend fun countUserRecipesOnce(): Int
 }
