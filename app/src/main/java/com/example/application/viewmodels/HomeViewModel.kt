@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.application.utils.XpManager
+import com.example.application.utils.AchievementManager
 
 data class RecipeWithMissing(
     val recipe: RecipeEntity,
@@ -68,7 +69,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
-        recalculateMissing()
+        viewModelScope.launch {
+            db.recipeDao().getAll().collect {
+                recalculateMissing()
+            }
+        }
     }
 
     /** Пересчитывает, сколько ингредиентов не хватает для каждого рецепта. */
@@ -108,10 +113,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             _minPurchasesMode.value = newValue
             if (newValue) {
                 viewModelScope.launch {
-                    XpManager.award(
-                        db,
-                        XpManager.ACTION_MIN_PURCHASES
-                    )
+                    // Счётчик для Economist — независимо от XP
+                    db.usageCounterDao().increment(AchievementManager.KEY_MIN_PURCHASES)
+                    // XP по дневному лимиту
+                    XpManager.award(db, XpManager.ACTION_MIN_PURCHASES)
+                    // Проверка достижений
+                    AchievementManager.checkAll(db)
                 }
             }
         }
