@@ -2,7 +2,8 @@ package com.example.application.utils
 
 import com.example.application.data.local.AppDatabase
 import com.example.application.data.local.entity.UserStatsEntity
-
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 object AchievementManager {
 
     const val NOVICE = "novice"
@@ -20,6 +21,12 @@ object AchievementManager {
         BACKUP_MASTER to "💾 Мастер бэкапа",
         GOURMET to "👨‍🍳 Гурман"
     )
+
+    private val _newlyUnlocked = MutableSharedFlow<List<String>>(
+        replay = 0,
+        extraBufferCapacity = 1
+    )
+    val newlyUnlocked: SharedFlow<List<String>> = _newlyUnlocked
 
     fun isUnlocked(stats: UserStatsEntity, id: String): Boolean =
         stats.unlockedAchievements.split(";").contains(id)
@@ -42,7 +49,7 @@ object AchievementManager {
         }
 
         // Экономист — 10 использований «Минимум покупок»
-        if (stats.dailyMinPurchasesUsed >= 10 && ECONOMIST !in unlocked) {
+        if (stats.totalMinPurchasesUsed >= 10 && ECONOMIST !in unlocked) {
             newlyUnlocked.add(ECONOMIST)
         }
 
@@ -61,7 +68,9 @@ object AchievementManager {
         if (newlyUnlocked.isNotEmpty()) {
             val updated = (unlocked + newlyUnlocked).joinToString(";")
             db.userStatsDao().save(stats.copy(unlockedAchievements = updated))
+            _newlyUnlocked.tryEmit(newlyUnlocked)
         }
+
         return newlyUnlocked
     }
 }

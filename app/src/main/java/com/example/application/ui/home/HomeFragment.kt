@@ -191,6 +191,21 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                com.example.application.utils.AchievementManager.newlyUnlocked.collect { list ->
+                    list.forEach { id ->
+                        val title = com.example.application.utils.AchievementManager.TITLES[id] ?: id
+                        android.widget.Toast.makeText(
+                            requireContext(),
+                            "🏆 Достижение: $title",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        }
     }
 
     private fun buildCategoryChips(

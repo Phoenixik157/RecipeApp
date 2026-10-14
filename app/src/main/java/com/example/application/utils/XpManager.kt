@@ -121,7 +121,10 @@ object XpManager {
             )
             ACTION_CREATE_RECIPE -> stats.copy(dailyRecipesCreated = stats.dailyRecipesCreated + 1)
             ACTION_ADD_PRODUCT -> stats.copy(dailyProductsAdded = stats.dailyProductsAdded + 1)
-            ACTION_MIN_PURCHASES -> stats.copy(dailyMinPurchasesUsed = stats.dailyMinPurchasesUsed + 1)
+            ACTION_MIN_PURCHASES -> stats.copy(
+                dailyMinPurchasesUsed = stats.dailyMinPurchasesUsed + 1,
+                totalMinPurchasesUsed = stats.totalMinPurchasesUsed + 1
+            )
             ACTION_EXPORT -> stats.copy(dailyExports = stats.dailyExports + 1)
             else -> stats
         }
