@@ -19,6 +19,4 @@ data class UserStatsEntity(
     val dailyRecipesCreated: Int = 0,
     val dailyMinPurchasesUsed: Int = 0,
     val dailyExports: Int = 0,
-    val totalMinPurchasesUsed: Int = 0,
-    val unlockedAchievements: String = ""
 )

@@ -10,8 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.application.utils.XpManager
-import com.example.application.data.local.entity.CookingHistoryEntity
-import com.example.application.utils.AchievementManager
 
 data class IngredientWithQty(
     val ingredient: IngredientEntity,
@@ -73,20 +71,20 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
     }
 
     suspend fun awardCooked(recipeId: Long, servings: Int): Int {
-        val xp = XpManager.award(
+        val xp = com.example.application.utils.XpManager.award(
             db,
-            XpManager.ACTION_COOKED
+            com.example.application.utils.XpManager.ACTION_COOKED
         )
-        if (xp > 0) {
-            db.cookingHistoryDao().insert(
-                CookingHistoryEntity(
-                    recipeId = recipeId,
-                    servings = servings,
-                    xpEarned = xp
-                )
+
+        // Запись в историю — всегда, независимо от дневного лимита XP
+        db.cookingHistoryDao().insert(
+            com.example.application.data.local.entity.CookingHistoryEntity(
+                recipeId = recipeId,
+                servings = servings,
+                xpEarned = xp
             )
-        }
-        AchievementManager.checkAll(db)
+        )
+
         return xp
     }
 }
