@@ -62,4 +62,27 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
 
     fun increaseServings() { _servings.value = _servings.value + 1 }
     fun decreaseServings() { if (_servings.value > 1) _servings.value = _servings.value - 1 }
+
+    fun awardView() {
+        viewModelScope.launch {
+            com.example.application.utils.XpManager.award(db, com.example.application.utils.XpManager.ACTION_VIEW_RECIPE)
+        }
+    }
+
+    suspend fun awardCooked(recipeId: Long, servings: Int): Int {
+        val xp = com.example.application.utils.XpManager.award(
+            db,
+            com.example.application.utils.XpManager.ACTION_COOKED
+        )
+        if (xp > 0) {
+            db.cookingHistoryDao().insert(
+                com.example.application.data.local.entity.CookingHistoryEntity(
+                    recipeId = recipeId,
+                    servings = servings,
+                    xpEarned = xp
+                )
+            )
+        }
+        return xp
+    }
 }

@@ -46,7 +46,12 @@ class RecipeDetailFragment : Fragment() {
             Toast.makeText(requireContext(), "QR-код скоро будет", Toast.LENGTH_SHORT).show()
         }
         view.findViewById<TextView>(R.id.btnCooked).setOnClickListener {
-            Toast.makeText(requireContext(), "Записано в историю", Toast.LENGTH_SHORT).show()
+            val recipe = viewModel.recipe.value ?: return@setOnClickListener
+            viewLifecycleOwner.lifecycleScope.launch {
+                val xp = viewModel.awardCooked(recipe.id, viewModel.servings.value)
+                val msg = if (xp > 0) "Приготовлено! +$xp XP" else "Записано. Лимит XP на сегодня исчерпан"
+                android.widget.Toast.makeText(requireContext(), msg, android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
 
         // Рецепт
@@ -84,6 +89,8 @@ class RecipeDetailFragment : Fragment() {
                 }
             }
         }
+
+        viewModel.awardView()
     }
 
     private fun rebuildIngredients(view: View, servings: Int) {

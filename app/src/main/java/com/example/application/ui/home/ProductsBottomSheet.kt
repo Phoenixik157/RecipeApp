@@ -75,6 +75,15 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
                 selectedIds.forEach { id ->
                     db.userProductDao().insert(UserProductEntity(id))
                 }
+
+                // Начисляем XP, только если что-то выбрано
+                if (selectedIds.isNotEmpty()) {
+                    com.example.application.utils.XpManager.award(
+                        db,
+                        com.example.application.utils.XpManager.ACTION_ADD_PRODUCT
+                    )
+                }
+
                 onDone?.invoke()
                 dismiss()
             }

@@ -11,6 +11,7 @@ import com.example.application.data.local.entity.RecipeIngredientEntity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.application.utils.XpManager
 
 /** Строка ингредиента в форме. */
 data class IngredientRow(
@@ -99,6 +100,10 @@ class AddRecipeViewModel(application: Application) : AndroidViewModel(applicatio
                 )
             }
             if (links.isNotEmpty()) db.recipeIngredientDao().insertAll(links)
+
+            if (editingRecipeId == null) {
+                XpManager.award(db, XpManager.ACTION_CREATE_RECIPE)
+            }
 
             _saved.value = true
         }

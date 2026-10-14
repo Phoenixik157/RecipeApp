@@ -103,14 +103,23 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** Переключение режима вручную (по клику на чипс). */
     fun toggleMinPurchasesMode() {
         if (_userHasProducts.value) {
-            _minPurchasesMode.value = !_minPurchasesMode.value
+            val newValue = !_minPurchasesMode.value
+            _minPurchasesMode.value = newValue
+            if (newValue) {
+                viewModelScope.launch {
+                    com.example.application.utils.XpManager.award(
+                        db,
+                        com.example.application.utils.XpManager.ACTION_MIN_PURCHASES
+                    )
+                }
+            }
         }
     }
 
     fun selectCategory(id: Long?) { _selectedCategory.value = id }
     fun setSearchQuery(q: String) { _searchQuery.value = q }
 
-    val userStats: kotlinx.coroutines.flow.StateFlow<com.example.application.data.local.entity.UserStatsEntity?> =
+    val userStats: StateFlow<com.example.application.data.local.entity.UserStatsEntity?> =
         db.userStatsDao().observe()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 }
