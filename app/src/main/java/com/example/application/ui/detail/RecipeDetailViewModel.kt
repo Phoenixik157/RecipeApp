@@ -73,14 +73,14 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
     }
 
     suspend fun awardCooked(recipeId: Long, servings: Int): Int {
-        val xp = com.example.application.utils.XpManager.award(
+        val xp = XpManager.award(
             db,
-            com.example.application.utils.XpManager.ACTION_COOKED
+            XpManager.ACTION_COOKED
         )
 
         // История — всегда
         db.cookingHistoryDao().insert(
-            com.example.application.data.local.entity.CookingHistoryEntity(
+            CookingHistoryEntity(
                 recipeId = recipeId,
                 servings = servings,
                 xpEarned = xp
@@ -91,6 +91,8 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
         val stats = db.userStatsDao().get()
             ?: com.example.application.data.local.entity.UserStatsEntity()
         db.userStatsDao().save(stats.copy(dishesCooked = stats.dishesCooked + 1))
+
+        AchievementManager.checkAll(db)
 
         return xp
     }

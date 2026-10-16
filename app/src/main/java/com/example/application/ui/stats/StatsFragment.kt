@@ -28,6 +28,7 @@ import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import android.widget.GridLayout
 
 class StatsFragment : Fragment() {
 
@@ -112,6 +113,14 @@ class StatsFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.weekBars.collect { bars ->
                     renderBarChart(view, bars)
+                }
+            }
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.unlockedAchievements.collect { unlocked ->
+                    renderAchievements(view, unlocked)
                 }
             }
         }
@@ -233,5 +242,85 @@ class StatsFragment : Fragment() {
         }
 
         chart.invalidate()
+    }
+
+    private fun renderAchievements(view: View, unlockedIds: List<String>) {
+        val grid = view.findViewById<LinearLayout>(R.id.achievementsGrid)
+        grid.removeAllViews()
+
+        val all = com.example.application.utils.AchievementManager.TITLES
+
+        // Разбиваем на ряды по 3
+        val entries = all.entries.toList()
+        var index = 0
+        while (index < entries.size) {
+            val row = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            repeat(3) {
+                val (id, title) = entries.getOrNull(index) ?: run {
+                    // Пустая ячейка для выравнивания
+                    val spacer = View(requireContext()).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                        )
+                    }
+                    row.addView(spacer)
+                    return@repeat
+                }
+
+                val isUnlocked = unlockedIds.contains(id)
+
+                val cell = LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.VERTICAL
+                    gravity = android.view.Gravity.CENTER
+                    setPadding(24, 32, 24, 32)
+                    layoutParams = LinearLayout.LayoutParams(
+                        0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                    ).apply { marginEnd = 16 }
+                    setBackgroundColor(
+                        if (isUnlocked) 0x26FF7043.toInt() else 0xFF252525.toInt()
+                    )
+                    alpha = if (isUnlocked) 1f else 0.55f
+                }
+
+                val name = TextView(requireContext()).apply {
+                    text = title
+                    textSize = 11f
+                    gravity = android.view.Gravity.CENTER
+                    setTextColor(if (isUnlocked) 0xFFFF7043.toInt() else 0xFF9E9E9E.toInt())
+                    setTypeface(null, android.graphics.Typeface.BOLD)
+                }
+                cell.addView(name)
+
+                if (!isUnlocked) {
+                    val lock = TextView(requireContext()).apply {
+                        text = "🔒"
+                        textSize = 12f
+                        gravity = android.view.Gravity.CENTER
+                        setPadding(0, 6, 0, 0)
+                    }
+                    cell.addView(lock)
+                }
+
+                row.addView(cell)
+                index++
+            }
+
+            grid.addView(row)
+
+            // Отступ между рядами
+            val gap = View(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 16
+                )
+            }
+            grid.addView(gap)
+        }
     }
 }

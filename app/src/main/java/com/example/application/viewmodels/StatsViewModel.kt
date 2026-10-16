@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 
 data class QuickMetrics(
     val favouriteCategory: String = "—",
@@ -44,6 +45,14 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
     private val _weekBars = MutableStateFlow<List<Int>>(emptyList())  // 7 значений, Пн..Вс
     val weekBars: StateFlow<List<Int>> = _weekBars
 
+    val unlockedAchievements: StateFlow<List<String>> =
+        db.achievementDao().getAll()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+            .let { flow ->
+                flow.map { list -> list.map { it.id } }
+                    .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+            }
+
     init {
         viewModelScope.launch {
             db.cookingHistoryDao().getAll().collect { list ->
@@ -52,6 +61,7 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
                 _categorySlices.value = computeCategorySlices(list)
                 _weekBars.value = computeWeekBars(list)
             }
+            com.example.application.utils.AchievementManager.checkAll(db)
         }
     }
 
