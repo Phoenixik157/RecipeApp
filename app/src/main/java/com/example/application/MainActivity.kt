@@ -40,7 +40,34 @@ class MainActivity : AppCompatActivity() {
         // Навигация
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.navHostFragment) as NavHostFragment
-        binding.bottomNav.setupWithNavController(navHostFragment.navController)
+        val navController = navHostFragment.navController
+
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            // Уже на этом экране — просто сбрасываем стек до корня вкладки
+            if (navController.currentDestination?.id == item.itemId) {
+                navController.popBackStack(item.itemId, inclusive = false)
+                true
+            } else {
+                val options = androidx.navigation.NavOptions.Builder()
+                    .setLaunchSingleTop(true)
+                    .setPopUpTo(navController.graph.startDestinationId, inclusive = false)
+                    .build()
+                navController.navigate(item.itemId, null, options)
+                true
+            }
+        }
+
+        // Подсветка активного пункта BottomNav — с учётом вложенных экранов
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val itemId = when (destination.id) {
+                R.id.nav_home, R.id.nav_recipe_detail, R.id.nav_add_recipe -> R.id.nav_home
+                R.id.nav_myrecipes -> R.id.nav_myrecipes
+                R.id.nav_stats -> R.id.nav_stats
+                R.id.nav_settings -> R.id.nav_settings
+                else -> R.id.nav_home
+            }
+            binding.bottomNav.selectedItemId = itemId
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
