@@ -19,6 +19,8 @@ data class QuickMetrics(
     val favouriteComplexity: String = "—"
 )
 
+data class CategorySlice(val name: String, val count: Int, val color: Int)
+
 class StatsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
@@ -36,11 +38,19 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
     private val _showDailyLimits = MutableStateFlow(true)
     val showDailyLimits: StateFlow<Boolean> = _showDailyLimits
 
+    private val _categorySlices = MutableStateFlow<List<CategorySlice>>(emptyList())
+    val categorySlices: StateFlow<List<CategorySlice>> = _categorySlices
+
+    private val _weekBars = MutableStateFlow<List<Int>>(emptyList())  // 7 значений, Пн..Вс
+    val weekBars: StateFlow<List<Int>> = _weekBars
+
     init {
         viewModelScope.launch {
             db.cookingHistoryDao().getAll().collect { list ->
                 _history.value = list
                 _metrics.value = computeMetrics(list)
+                _categorySlices.value = computeCategorySlices(list)
+                _weekBars.value = computeWeekBars(list)
             }
         }
     }
@@ -95,6 +105,52 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
             averageTimeMinutes = avgTime,
             favouriteComplexity = favComplexity
         )
+    }
+
+    private suspend fun computeCategorySlices(history: List<CookingHistoryEntity>): List<CategorySlice> {
+        if (history.isEmpty()) return emptyList()
+        val recipes = db.recipeDao().getAllOnce().associateBy { it.id }
+        val counts = mutableMapOf<Long, Int>()
+        history.forEach { h ->
+            val r = recipes[h.recipeId] ?: return@forEach
+            counts[r.categoryId] = (counts[r.categoryId] ?: 0) + 1
+        }
+        val palette = listOf(
+            0xFFFF7043.toInt(),  // оранжевый
+            0xFF42A5F5.toInt(),  // синий
+            0xFF66BB6A.toInt(),  // зелёный
+            0xFFAB47BC.toInt(),  // пурпурный
+            0xFFFFA726.toInt()   // жёлто-оранжевый
+        )
+        return counts.entries
+            .sortedByDescending { it.value }
+            .mapIndexed { idx, (catId, count) ->
+                CategorySlice(
+                    name = db.categoryDao().getById(catId)?.name ?: "—",
+                    count = count,
+                    color = palette[idx % palette.size]
+                )
+            }
+    }
+
+    private fun computeWeekBars(history: List<CookingHistoryEntity>): List<Int> {
+        // Последние 7 календарных дней (сегодня — последний элемент)
+        val cal = java.util.Calendar.getInstance()
+        // Смещаемся к началу сегодняшнего дня
+        cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+        cal.set(java.util.Calendar.MINUTE, 0)
+        cal.set(java.util.Calendar.SECOND, 0)
+        cal.set(java.util.Calendar.MILLISECOND, 0)
+        val todayStart = cal.timeInMillis
+
+        val dayMillis = 86400000L
+        val result = MutableList(7) { 0 }
+
+        history.forEach { h ->
+            val dayIndex = ((h.cookedAt - (todayStart - 6 * dayMillis)) / dayMillis).toInt()
+            if (dayIndex in 0..6) result[dayIndex]++
+        }
+        return result
     }
 
     fun dailyMaxXp(): Int = XpManager.dailyMaxXp()
