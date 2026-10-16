@@ -41,10 +41,11 @@ class RecipeDetailFragment : Fragment() {
         view.findViewById<TextView>(R.id.btnMinus).setOnClickListener { viewModel.decreaseServings() }
         view.findViewById<TextView>(R.id.btnPlus).setOnClickListener { viewModel.increaseServings() }
 
-        // Заглушки для кнопок
         view.findViewById<TextView>(R.id.btnShare).setOnClickListener {
-            Toast.makeText(requireContext(), "QR-код скоро будет", Toast.LENGTH_SHORT).show()
+            val recipe = viewModel.recipe.value ?: return@setOnClickListener
+            QrDialog.show(requireContext(), recipe)
         }
+
         view.findViewById<TextView>(R.id.btnCooked).setOnClickListener {
             val recipe = viewModel.recipe.value ?: return@setOnClickListener
             viewLifecycleOwner.lifecycleScope.launch {
