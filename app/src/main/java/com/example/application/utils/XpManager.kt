@@ -116,8 +116,7 @@ object XpManager {
             ACTION_DAILY_LOGIN -> stats.copy(dailyLogins = stats.dailyLogins + 1)
             ACTION_VIEW_RECIPE -> stats.copy(dailyRecipesViewed = stats.dailyRecipesViewed + 1)
             ACTION_COOKED -> stats.copy(
-                dailyDishesCooked = stats.dailyDishesCooked + 1,
-                dishesCooked = stats.dishesCooked + 1
+                dailyDishesCooked = stats.dailyDishesCooked + 1
             )
             ACTION_CREATE_RECIPE -> stats.copy(dailyRecipesCreated = stats.dailyRecipesCreated + 1)
             ACTION_ADD_PRODUCT -> stats.copy(dailyProductsAdded = stats.dailyProductsAdded + 1)

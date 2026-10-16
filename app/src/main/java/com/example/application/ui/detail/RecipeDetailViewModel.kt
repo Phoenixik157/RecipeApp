@@ -73,12 +73,25 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
     }
 
     suspend fun awardCooked(recipeId: Long, servings: Int): Int {
-        val xp = XpManager.award(db, XpManager.ACTION_COOKED)
-        // Запись в историю — всегда, независимо от дневного лимита XP
-        db.cookingHistoryDao().insert(
-            CookingHistoryEntity(recipeId = recipeId, servings = servings, xpEarned = xp)
+        val xp = com.example.application.utils.XpManager.award(
+            db,
+            com.example.application.utils.XpManager.ACTION_COOKED
         )
-        AchievementManager.checkAll(db)
+
+        // История — всегда
+        db.cookingHistoryDao().insert(
+            com.example.application.data.local.entity.CookingHistoryEntity(
+                recipeId = recipeId,
+                servings = servings,
+                xpEarned = xp
+            )
+        )
+
+        // Общий счётчик приготовлений — независимо от XP
+        val stats = db.userStatsDao().get()
+            ?: com.example.application.data.local.entity.UserStatsEntity()
+        db.userStatsDao().save(stats.copy(dishesCooked = stats.dishesCooked + 1))
+
         return xp
     }
 }
