@@ -219,7 +219,10 @@
                         android:text="—"
                         android:textColor="#FFFFFF"
                         android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:maxLines="3"
+                        android:ellipsize="end"
+                        android:gravity="center"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -247,7 +250,10 @@
                         android:text="—"
                         android:textColor="#FFFFFF"
                         android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:maxLines="3"
+                        android:ellipsize="end"
+                        android:gravity="center"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -275,7 +281,10 @@
                         android:text="—"
                         android:textColor="#FFFFFF"
                         android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:maxLines="3"
+                        android:ellipsize="end"
+                        android:gravity="center"/>
                 </LinearLayout>
             </LinearLayout>
 

@@ -48,34 +48,46 @@ class StatsViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun computeMetrics(history: List<CookingHistoryEntity>): QuickMetrics {
         if (history.isEmpty()) return QuickMetrics()
 
-        // Среднее время готовки
-        val recipeIds = history.map { it.recipeId }.distinct()
-        val recipes = db.recipeDao().getAllOnce().filter { it.id in recipeIds }
-        val avgTime = if (recipes.isNotEmpty()) {
-            recipes.map { it.cookingTimeMinutes }.average().toInt()
-        } else 0
+        val allRecipes = db.recipeDao().getAllOnce()
+        val recipeById = allRecipes.associateBy { it.id }
 
-        // Любимая категория
+        // Среднее время — по каждому приготовлению (с повторами)
+        val times = history.mapNotNull { recipeById[it.recipeId]?.cookingTimeMinutes }
+        val avgTime = if (times.isNotEmpty()) times.average().toInt() else 0
+
+        // Категории — считаем по каждому приготовлению
         val categoryCount = mutableMapOf<Long, Int>()
         history.forEach { h ->
-            val recipe = recipes.find { it.id == h.recipeId } ?: return@forEach
+            val recipe = recipeById[h.recipeId] ?: return@forEach
             categoryCount[recipe.categoryId] = (categoryCount[recipe.categoryId] ?: 0) + 1
         }
-        val favCatId = categoryCount.maxByOrNull { it.value }?.key
-        val favCategoryName = if (favCatId != null) {
-            db.categoryDao().getById(favCatId)?.name ?: "—"
-        } else "—"
+        val maxCatCount = categoryCount.values.maxOrNull() ?: 0
+        val topCategoryNames = if (maxCatCount > 0) {
+            categoryCount.filter { it.value == maxCatCount }.keys
+                .mapNotNull { db.categoryDao().getById(it)?.name }
+                .sorted()
+        } else emptyList()
+        val favCategoryName = if (topCategoryNames.isEmpty()) "—" else topCategoryNames.joinToString(", ")
 
-        // Любимая сложность (чаще всего выбирает)
+        // Сложность — считаем по каждому приготовлению
         val complexityCount = mutableMapOf<Int, Int>()
-        recipes.forEach { r ->
-            complexityCount[r.complexity] = (complexityCount[r.complexity] ?: 0) + 1
+        history.forEach { h ->
+            val recipe = recipeById[h.recipeId] ?: return@forEach
+            complexityCount[recipe.complexity] = (complexityCount[recipe.complexity] ?: 0) + 1
         }
-        val favComplexity = when (complexityCount.maxByOrNull { it.value }?.key) {
-            1 -> "Легко"
-            2 -> "Средне"
-            3 -> "Сложно"
-            else -> "—"
+        val maxComplCount = complexityCount.values.maxOrNull() ?: 0
+        val topComplexities = if (maxComplCount > 0) {
+            complexityCount.filter { it.value == maxComplCount }.keys.sorted()
+        } else emptyList()
+        val favComplexity = if (topComplexities.isEmpty()) "—" else {
+            topComplexities.joinToString(", ") { level ->
+                when (level) {
+                    1 -> "Легко"
+                    2 -> "Средне"
+                    3 -> "Сложно"
+                    else -> "?"
+                }
+            }
         }
 
         return QuickMetrics(
