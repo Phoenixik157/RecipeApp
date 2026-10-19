@@ -111,8 +111,19 @@ class HomeFragment : Fragment() {
         }
 
         // Клик по чипсу минимум покупок
-        view.findViewById<TextView>(R.id.minPurchasesChip).setOnClickListener {
-            viewModel.toggleMinPurchasesMode()
+        view.findViewById<TextView>(R.id.filterBtn).setOnClickListener {
+            val sheet = FilterBottomSheet()
+            sheet.currentSort = viewModel.sortType.value
+            sheet.currentMinMode = viewModel.minPurchasesMode.value
+
+            sheet.onApply = { sort, minMode ->
+                viewModel.setSortType(sort)
+                // Включаем/выключаем режим
+                if (minMode != viewModel.minPurchasesMode.value) {
+                    viewModel.toggleMinPurchasesMode()
+                }
+            }
+            sheet.show(parentFragmentManager, "FilterBottomSheet")
         }
 
         // Подписка на рецепты
@@ -163,31 +174,6 @@ class HomeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.selectedCategory.collect { selectedId ->
                     buildCategoryChips(view, viewModel.categories.value, selectedId)
-                }
-            }
-        }
-
-        // Подписка на режим «Минимум покупок» — показ/скрытие чипса
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userHasProducts.collect { has ->
-                    view.findViewById<TextView>(R.id.minPurchasesChip).visibility =
-                        if (has) View.VISIBLE else View.GONE
-                }
-            }
-        }
-
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.minPurchasesMode.collect { active ->
-                    val chip = view.findViewById<TextView>(R.id.minPurchasesChip)
-                    // Активный — залитый оранжевым. Неактивный — обводка оранжевая, фон прозрачный.
-                    chip.setBackgroundColor(
-                        if (active) 0xFFFF7043.toInt() else 0x26FF7043.toInt()
-                    )
-                    chip.setTextColor(
-                        if (active) 0xFFFFFFFF.toInt() else 0xFFFF7043.toInt()
-                    )
                 }
             }
         }

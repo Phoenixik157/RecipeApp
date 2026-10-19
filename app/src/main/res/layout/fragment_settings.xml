@@ -64,52 +64,6 @@
                     android:checked="true" />
             </LinearLayout>
 
-            <!-- ПОИСК И ФИЛЬТРЫ -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:text="ПОИСК И ФИЛЬТРЫ"
-                android:textColor="#FF7043"
-                android:textSize="11sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/rowSort"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:background="#1E1E1E"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Сортировка по умолчанию"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/sortValue"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="По названию"
-                    android:textColor="#9E9E9E"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="›"
-                    android:textColor="#9E9E9E"
-                    android:textSize="16sp" />
-            </LinearLayout>
-
             <!-- РЕЗЕРВНОЕ КОПИРОВАНИЕ -->
             <TextView
                 android:layout_width="wrap_content"

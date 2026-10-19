@@ -21,6 +21,8 @@ data class RecipeWithMissing(
     val totalCount: Int
 )
 
+enum class SortType { NAME, TIME, COMPLEXITY }
+
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
@@ -42,6 +44,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     // Все рецепты + посчитанные «не хватает»
     private val _allRecipesWithMissing = MutableStateFlow<List<RecipeWithMissing>>(emptyList())
 
+    private val _sortType = MutableStateFlow(SortType.NAME)
+    val sortType: StateFlow<SortType> = _sortType
+
     val categories: StateFlow<List<CategoryEntity>> = db.categoryDao()
         .getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -53,19 +58,27 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _allRecipesWithMissing,
         _selectedCategory,
         _searchQuery,
-        _minPurchasesMode
-    ) { all, categoryId, query, minMode ->
+        _minPurchasesMode,
+        _sortType // <-- Добавили сюда
+    ) { all, categoryId, query, minMode, sort ->
         val filtered = all.filter { item ->
             val r = item.recipe
             val matchesCategory = categoryId == null || r.categoryId == categoryId
             val matchesQuery = query.isEmpty() || r.title.contains(query, true)
             matchesCategory && matchesQuery
         }
-        if (minMode) {
+
+        // Сначала применяем "Минимум покупок", если он включен
+        val sorted = if (minMode) {
             filtered.sortedBy { it.missingCount }
         } else {
-            filtered
+            when (sort) {
+                SortType.NAME -> filtered.sortedBy { it.recipe.title.lowercase() }
+                SortType.TIME -> filtered.sortedBy { it.recipe.cookingTimeMinutes }
+                SortType.COMPLEXITY -> filtered.sortedBy { it.recipe.complexity }
+            }
         }
+        sorted
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
@@ -126,6 +139,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectCategory(id: Long?) { _selectedCategory.value = id }
     fun setSearchQuery(q: String) { _searchQuery.value = q }
+
+    fun setSortType(type: SortType) {
+        _sortType.value = type
+    }
 
     val userStats: StateFlow<com.example.application.data.local.entity.UserStatsEntity?> =
         db.userStatsDao().observe()

@@ -147,28 +147,47 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="20dp"
-                android:background="#1E1E1E"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="14dp">
+                android:orientation="horizontal">
 
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="#1E1E1E"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="14dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🔍"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/searchInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@null"
+                        android:hint="Поиск по названию блюда..."
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#9E9E9E"
+                        android:textSize="14sp"
+                        android:inputType="text" />
+                </LinearLayout>
+
+                <!-- Кнопка вызова фильтров -->
                 <TextView
+                    android:id="@+id/filterBtn"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🔍"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/searchInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:background="@null"
-                    android:hint="Поиск по названию блюда..."
-                    android:textColor="#FFFFFF"
-                    android:textColorHint="#9E9E9E"
-                    android:textSize="14sp"
-                    android:inputType="text" />
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="8dp"
+                    android:background="#1E1E1E"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="⏬"
+                    android:textSize="18sp" />
             </LinearLayout>
 
             <!-- Чипсы категорий -->
@@ -185,21 +204,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" />
             </HorizontalScrollView>
-
-            <TextView
-                android:id="@+id/minPurchasesChip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="8dp"
-                android:background="#26FF7043"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:text="🛒 Минимум покупок"
-                android:textColor="#FF7043"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
 
             <!-- Список рецептов -->
             <androidx.recyclerview.widget.RecyclerView
