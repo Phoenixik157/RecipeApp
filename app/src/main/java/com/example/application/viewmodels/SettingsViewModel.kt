@@ -17,13 +17,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     private val db = AppDatabase.getInstance(application)
 
     /** Экспортирует пользовательские рецепты, статистику и историю в JSON-файл. */
+    // --- ЭКСПОРТ ---
     fun exportToJson(uri: Uri, onResult: (Boolean, String) -> Unit) {
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
                     val root = JSONObject()
 
-                    // 1. Статистика
                     db.userStatsDao().get()?.let { stats ->
                         root.put("stats", JSONObject().apply {
                             put("totalXp", stats.totalXp)
@@ -32,7 +32,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                         })
                     }
 
-                    // 2. Пользовательские рецепты
+                    val categories = db.categoryDao().getAllOnce().associateBy { it.id }
+                    val allRecipes = db.recipeDao().getAllOnce().associateBy { it.id }
+                    val allIngredients = db.ingredientDao().getAllOnce().associateBy { it.id }
+
+                    // 1. Рецепты (сохраняем НАЗВАНИЕ категории вместо ID)
                     val userRecipes = db.recipeDao().getUserRecipesOnce()
                     val recipesArray = JSONArray()
                     val recipeIds = mutableListOf<Long>()
@@ -40,50 +44,49 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     userRecipes.forEach { r ->
                         recipeIds.add(r.id)
                         recipesArray.put(JSONObject().apply {
-                            put("id", r.id)
+                            put("id", r.id) // временно сохраняем, чтобы связать с ингредиентами
                             put("title", r.title)
                             put("description", r.description)
                             put("cookingTimeMinutes", r.cookingTimeMinutes)
                             put("complexity", r.complexity)
                             put("baseServings", r.baseServings)
                             put("instructions", r.instructions)
-                            put("categoryId", r.categoryId)
+                            put("categoryName", categories[r.categoryId]?.name ?: "Основные")
                         })
                     }
                     root.put("recipes", recipesArray)
 
-                    // 3. Ингредиенты пользовательских рецептов
+                    // 2. Ингредиенты (сохраняем НАЗВАНИЕ ингредиента)
                     val allLinks = db.recipeIngredientDao().getAllLinksOnce()
                     val userLinks = allLinks.filter { it.recipeId in recipeIds }
                     val linksArray = JSONArray()
                     userLinks.forEach { link ->
                         linksArray.put(JSONObject().apply {
                             put("recipeId", link.recipeId)
-                            put("ingredientId", link.ingredientId) // или можно сохранять имя ингредиента, чтобы не зависеть от ID
+                            put("ingredientName", allIngredients[link.ingredientId]?.name ?: "")
                             put("quantity", link.quantity)
                             put("unit", link.unit)
                         })
                     }
                     root.put("recipe_ingredients", linksArray)
 
-                    // 4. Продукты в холодильнике
-                    val userProducts = db.userProductDao().getAllIdsOnce()
+                    // 3. Продукты в холодильнике (сохраняем НАЗВАНИЯ)
                     val productsArray = JSONArray()
-                    userProducts.forEach { id -> productsArray.put(id) }
+                    db.userProductDao().getAllIdsOnce().forEach { id ->
+                        allIngredients[id]?.let { productsArray.put(it.name) }
+                    }
                     root.put("user_products", productsArray)
 
-                    // 5. Достижения
-                    val achievements = db.achievementDao().getAllOnce()
+                    // 4. Достижения
                     val achievementsArray = JSONArray()
-                    achievements.forEach { a -> achievementsArray.put(a.id) }
+                    db.achievementDao().getAllOnce().forEach { achievementsArray.put(it.id) }
                     root.put("achievements", achievementsArray)
 
-                    // 6. История готовки
-                    val history = db.cookingHistoryDao().getAllOnce()
+                    // 5. История (сохраняем НАЗВАНИЕ рецепта вместо ID)
                     val historyArray = JSONArray()
-                    history.forEach { h ->
+                    db.cookingHistoryDao().getAllOnce().forEach { h ->
                         historyArray.put(JSONObject().apply {
-                            put("recipeId", h.recipeId)
+                            put("recipeTitle", allRecipes[h.recipeId]?.title ?: "")
                             put("cookedAt", h.cookedAt)
                             put("servings", h.servings)
                             put("xpEarned", h.xpEarned)
@@ -91,7 +94,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     }
                     root.put("history", historyArray)
 
-                    // Запись файла
                     getApplication<Application>().contentResolver.openOutputStream(uri)?.use { out ->
                         out.write(root.toString(2).toByteArray())
                     }
@@ -103,62 +105,81 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    // --- ИМПОРТ ИЗ JSON ---
+    // --- ИМПОРТ ---
     fun importFromJson(uri: Uri, onResult: (Boolean, String) -> Unit) {
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
                     val jsonString = getApplication<Application>().contentResolver.openInputStream(uri)
                         ?.bufferedReader()?.use { it.readText() } ?: return@withContext
-
                     val root = JSONObject(jsonString)
 
-                    // 1. Удаляем текущие пользовательские данные перед импортом
+                    // Очищаем старые пользовательские данные
                     db.userProductDao().clear()
                     db.achievementDao().clear()
                     db.cookingHistoryDao().clear()
                     db.recipeDao().deleteAllUserRecipes()
 
-                    // 2. Статистика
                     if (root.has("stats")) {
                         val s = root.getJSONObject("stats")
-                        val currentStats = db.userStatsDao().get() ?: UserStatsEntity()
-                        db.userStatsDao().save(currentStats.copy(
+                        db.userStatsDao().save(UserStatsEntity().copy(
                             totalXp = s.optInt("totalXp", 0),
                             level = s.optInt("level", 1),
                             dishesCooked = s.optInt("dishesCooked", 0)
                         ))
                     }
 
-                    // 3. Рецепты
+                    // Восстанавливаем рецепты и запоминаем новые ID
+                    val idMap = mutableMapOf<Long, Long>()
                     if (root.has("recipes")) {
                         val arr = root.getJSONArray("recipes")
+                        val allCategories = db.categoryDao().getAllOnce()
+
                         for (i in 0 until arr.length()) {
                             val obj = arr.getJSONObject(i)
+                            val oldId = obj.getLong("id")
+                            val categoryName = obj.optString("categoryName", "Основные")
+
+                            // Ищем категорию по имени, если нет - берем "Основные", если и её нет - любую первую
+                            val catId = allCategories.find { it.name == categoryName }?.id
+                                ?: allCategories.find { it.name == "Основные" }?.id
+                                ?: allCategories.firstOrNull()?.id ?: continue
+
                             val recipe = RecipeEntity(
-                                id = obj.getLong("id"),
+                                id = 0, // 0 = сгенерировать новый ID
                                 title = obj.getString("title"),
                                 description = obj.optString("description", ""),
                                 cookingTimeMinutes = obj.optInt("cookingTimeMinutes", 30),
                                 complexity = obj.optInt("complexity", 1),
                                 baseServings = obj.optInt("baseServings", 2),
                                 instructions = obj.optString("instructions", ""),
-                                categoryId = obj.getLong("categoryId"),
+                                categoryId = catId,
                                 isUserRecipe = true
                             )
-                            db.recipeDao().insert(recipe)
+                            val newId = db.recipeDao().insert(recipe)
+                            idMap[oldId] = newId
                         }
                     }
 
-                    // 4. Ингредиенты рецептов
+                    // Восстанавливаем ингредиенты рецептов
                     if (root.has("recipe_ingredients")) {
                         val arr = root.getJSONArray("recipe_ingredients")
                         val links = mutableListOf<RecipeIngredientEntity>()
                         for (i in 0 until arr.length()) {
                             val obj = arr.getJSONObject(i)
+                            val oldRecipeId = obj.getLong("recipeId")
+                            val newRecipeId = idMap[oldRecipeId] ?: continue
+                            val ingName = obj.getString("ingredientName").lowercase().trim()
+                            if (ingName.isEmpty()) continue
+
+                            val existing = db.ingredientDao().getByName(ingName)
+                            val ingId = existing?.id ?: db.ingredientDao().insert(
+                                IngredientEntity(name = ingName, displayName = ingName, category = "other")
+                            )
+
                             links.add(RecipeIngredientEntity(
-                                recipeId = obj.getLong("recipeId"),
-                                ingredientId = obj.getLong("ingredientId"),
+                                recipeId = newRecipeId,
+                                ingredientId = ingId,
                                 quantity = obj.optDouble("quantity", 0.0),
                                 unit = obj.optString("unit", "")
                             ))
@@ -166,33 +187,39 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                         if (links.isNotEmpty()) db.recipeIngredientDao().insertAll(links)
                     }
 
-                    // 5. Продукты в холодильнике
+                    // Восстанавливаем холодильник
                     if (root.has("user_products")) {
                         val arr = root.getJSONArray("user_products")
                         for (i in 0 until arr.length()) {
-                            db.userProductDao().insert(UserProductEntity(arr.getLong(i)))
+                            val ingName = arr.getString(i).lowercase().trim()
+                            val ing = db.ingredientDao().getByName(ingName)
+                            if (ing != null) db.userProductDao().insert(UserProductEntity(ing.id))
                         }
                     }
 
-                    // 6. Достижения
                     if (root.has("achievements")) {
                         val arr = root.getJSONArray("achievements")
-                        for (i in 0 until arr.length()) {
-                            db.achievementDao().insert(AchievementEntity(arr.getString(i)))
-                        }
+                        for (i in 0 until arr.length()) db.achievementDao().insert(AchievementEntity(arr.getString(i)))
                     }
 
-                    // 7. История
+                    // Восстанавливаем историю (ищем рецепт по названию)
                     if (root.has("history")) {
                         val arr = root.getJSONArray("history")
+                        val allCurrentRecipes = db.recipeDao().getAllOnce()
+
                         for (i in 0 until arr.length()) {
                             val obj = arr.getJSONObject(i)
-                            db.cookingHistoryDao().insert(CookingHistoryEntity(
-                                recipeId = obj.getLong("recipeId"),
-                                cookedAt = obj.getLong("cookedAt"),
-                                servings = obj.optInt("servings", 2),
-                                xpEarned = obj.optInt("xpEarned", 0)
-                            ))
+                            val title = obj.optString("recipeTitle", "")
+                            val recipe = allCurrentRecipes.find { it.title == title }
+
+                            if (recipe != null) {
+                                db.cookingHistoryDao().insert(CookingHistoryEntity(
+                                    recipeId = recipe.id,
+                                    cookedAt = obj.getLong("cookedAt"),
+                                    servings = obj.optInt("servings", 2),
+                                    xpEarned = obj.optInt("xpEarned", 0)
+                                ))
+                            }
                         }
                     }
                 }
@@ -203,17 +230,20 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    // --- ОЧИСТКА ВСЕХ ДАННЫХ ---
+    // --- ОЧИСТКА ---
     fun clearAllData(onResult: (Boolean, String) -> Unit) {
         viewModelScope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    // Полностью очищаем БД
                     db.clearAllTables()
 
-                    // Заново наполняем базовыми категориями и рецептами
+                    // Восстанавливаем базовые данные
                     com.example.application.data.local.DatabaseSeeder.seed(getApplication(), db)
                     com.example.application.data.local.RecipeJsonImporter.importFromJson(getApplication(), db)
+
+                    // Создаем пустую статистику и начисляем вход
+                    db.userStatsDao().save(UserStatsEntity())
+                    com.example.application.utils.XpManager.award(db, com.example.application.utils.XpManager.ACTION_DAILY_LOGIN)
                 }
                 onResult(true, "Все данные очищены. Приложение начинается с нуля.")
             } catch (e: Exception) {

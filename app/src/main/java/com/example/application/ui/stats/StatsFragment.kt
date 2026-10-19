@@ -46,14 +46,14 @@ class StatsFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userStats.collect { stats ->
-                    stats ?: return@collect
+                    val s = stats ?: com.example.application.data.local.entity.UserStatsEntity()
 
                     // Уровень
-                    val levelName = XpManager.levelName(stats.level)
-                    view.findViewById<TextView>(R.id.levelTitle).text = "🔥 $levelName ${stats.level} ур."
+                    val levelName = XpManager.levelName(s.level)
+                    view.findViewById<TextView>(R.id.levelTitle).text = "🔥 $levelName ${s.level} ур."
 
                     // Прогресс
-                    val (inLevel, levelRange, _) = XpManager.progressFor(stats)
+                    val (inLevel, levelRange, _) = XpManager.progressFor(s)
                     view.findViewById<TextView>(R.id.levelXpIn).text = "$inLevel XP"
                     view.findViewById<TextView>(R.id.levelXpTotal).text = "$levelRange XP"
                     val levelProgress = if (levelRange > 0) (inLevel * 100) / levelRange else 0
@@ -61,28 +61,28 @@ class StatsFragment : Fragment() {
 
                     // Всего приготовлено
                     view.findViewById<TextView>(R.id.cookedTotal).text =
-                        "🍳 Всего приготовлено: ${stats.dishesCooked} блюд"
+                        "🍳 Всего приготовлено: ${s.dishesCooked} блюд"
 
                     // Дневной лимит
                     val dailyMax = XpManager.dailyMaxXp()
                     view.findViewById<TextView>(R.id.dailyXpBadge).text =
-                        "${stats.dailyXpGained}/$dailyMax"
-                    val dailyProgress = if (dailyMax > 0) (stats.dailyXpGained * 100) / dailyMax else 0
+                        "${s.dailyXpGained}/$dailyMax"
+                    val dailyProgress = if (dailyMax > 0) (s.dailyXpGained * 100) / dailyMax else 0
                     view.findViewById<ProgressBar>(R.id.dailyProgress).progress = dailyProgress
 
                     // Список задач
                     view.findViewById<TextView>(R.id.taskLogin).text =
-                        "✅ Ежедневный вход — ${stats.dailyLogins}/1"
+                        "✅ Ежедневный вход — ${s.dailyLogins}/1"
                     view.findViewById<TextView>(R.id.taskProducts).text =
-                        "⚠️ Добавление продуктов — ${stats.dailyProductsAdded}/5"
+                        "⚠️ Добавление продуктов — ${s.dailyProductsAdded}/5"
                     view.findViewById<TextView>(R.id.taskCooked).text =
-                        "✅ Приготовлено — ${stats.dailyDishesCooked}/3"
+                        "✅ Приготовлено — ${s.dailyDishesCooked}/3"
                     view.findViewById<TextView>(R.id.taskCreated).text =
-                        "⏸ Создание рецептов — ${stats.dailyRecipesCreated}/2"
+                        "⏸ Создание рецептов — ${s.dailyRecipesCreated}/2"
 
                     // Пустое состояние
                     val empty = view.findViewById<LinearLayout>(R.id.emptyBlock)
-                    empty.visibility = if (stats.dishesCooked == 0) View.VISIBLE else View.GONE
+                    empty.visibility = if (s.dishesCooked == 0) View.VISIBLE else View.GONE
                 }
             }
         }
