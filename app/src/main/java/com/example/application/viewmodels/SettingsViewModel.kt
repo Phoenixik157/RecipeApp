@@ -29,6 +29,17 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                             put("totalXp", stats.totalXp)
                             put("level", stats.level)
                             put("dishesCooked", stats.dishesCooked)
+
+                            // Сохраняем дневные лимиты и дату
+                            put("dailyXpGained", stats.dailyXpGained)
+                            put("lastResetDate", stats.lastResetDate)
+                            put("dailyLogins", stats.dailyLogins)
+                            put("dailyProductsAdded", stats.dailyProductsAdded)
+                            put("dailyRecipesViewed", stats.dailyRecipesViewed)
+                            put("dailyDishesCooked", stats.dailyDishesCooked)
+                            put("dailyRecipesCreated", stats.dailyRecipesCreated)
+                            put("dailyMinPurchasesUsed", stats.dailyMinPurchasesUsed)
+                            put("dailyExports", stats.dailyExports)
                         })
                     }
 
@@ -125,7 +136,18 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                         db.userStatsDao().save(UserStatsEntity().copy(
                             totalXp = s.optInt("totalXp", 0),
                             level = s.optInt("level", 1),
-                            dishesCooked = s.optInt("dishesCooked", 0)
+                            dishesCooked = s.optInt("dishesCooked", 0),
+
+                            // Восстанавливаем дневные лимиты и дату
+                            dailyXpGained = s.optInt("dailyXpGained", 0),
+                            lastResetDate = s.optString("lastResetDate", ""),
+                            dailyLogins = s.optInt("dailyLogins", 0),
+                            dailyProductsAdded = s.optInt("dailyProductsAdded", 0),
+                            dailyRecipesViewed = s.optInt("dailyRecipesViewed", 0),
+                            dailyDishesCooked = s.optInt("dailyDishesCooked", 0),
+                            dailyRecipesCreated = s.optInt("dailyRecipesCreated", 0),
+                            dailyMinPurchasesUsed = s.optInt("dailyMinPurchasesUsed", 0),
+                            dailyExports = s.optInt("dailyExports", 0)
                         ))
                     }
 
