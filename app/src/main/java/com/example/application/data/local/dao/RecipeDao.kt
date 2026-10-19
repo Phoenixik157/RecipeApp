@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.application.data.local.entity.RecipeEntity
 import kotlinx.coroutines.flow.Flow
+import com.example.application.data.local.entity.RecipeIngredientEntity
 
 @Dao
 interface RecipeDao {
@@ -56,4 +57,7 @@ interface RecipeDao {
 
     @Query("SELECT COUNT(*) FROM recipes WHERE isUserRecipe = 1")
     suspend fun countUserRecipesOnce(): Int
+
+    @Query("SELECT * FROM recipes WHERE isUserRecipe = 1 ORDER BY updatedAt DESC")
+    suspend fun getUserRecipesOnce(): List<RecipeEntity>
 }

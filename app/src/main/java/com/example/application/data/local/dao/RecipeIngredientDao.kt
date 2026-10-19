@@ -47,4 +47,7 @@ interface RecipeIngredientDao {
 
     @Query("SELECT * FROM recipe_ingredients")
     suspend fun getAllOnce(): List<RecipeIngredientEntity>
+
+    @Query("SELECT * FROM recipe_ingredients")
+    suspend fun getAllLinksOnce(): List<RecipeIngredientEntity>
 }

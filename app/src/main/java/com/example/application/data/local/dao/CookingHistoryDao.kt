@@ -32,4 +32,7 @@ interface CookingHistoryDao {
 
     @Query("SELECT COUNT(DISTINCT cookedAt / 86400000) FROM cooking_history")
     suspend fun distinctDaysOnce(): Int
+
+    @Query("SELECT * FROM cooking_history ORDER BY cookedAt DESC")
+    suspend fun getAllOnce(): List<CookingHistoryEntity>
 }
