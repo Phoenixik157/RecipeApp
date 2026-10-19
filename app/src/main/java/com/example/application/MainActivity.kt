@@ -16,6 +16,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.application.data.local.RecipeJsonImporter
 import com.example.application.utils.XpManager
+import android.net.Uri
+import android.content.Intent
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity() {
 
@@ -46,6 +49,28 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        // Обработка входящей ссылки (Deep Link)
+        handleIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        if (intent != null) handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        val data: android.net.Uri? = intent?.data
+        if (data != null) {
+            // Берем ID из ссылки
+            val recipeId = data.getQueryParameter("id")?.toLongOrNull()
+            if (recipeId != null) {
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.navHostFragment) as androidx.navigation.fragment.NavHostFragment
+                val bundle = Bundle().apply { putLong("recipeId", recipeId) }
+                navHostFragment.navController.navigate(R.id.nav_recipe_detail, bundle)
+            }
         }
     }
 }

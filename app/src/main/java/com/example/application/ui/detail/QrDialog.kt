@@ -17,12 +17,12 @@ import com.google.zxing.qrcode.QRCodeWriter
 
 object QrDialog {
 
-    private const val BASE_URL = "https://recipe-app.ru/recipe/"
+    private const val BASE_URL = "https://phoenixik157.github.io/recipe-web/recipe.html"
 
     fun show(context: Context, recipe: RecipeEntity) {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_qr, null)
 
-        val link = BASE_URL + recipe.id
+        val link = "$BASE_URL?id=${recipe.id}"
 
         // QR-код
         val qrBitmap = generateQr(link, 512)

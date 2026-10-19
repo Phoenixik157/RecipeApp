@@ -14,12 +14,22 @@
         android:theme="@style/Theme.Application">
         <activity
             android:name=".MainActivity"
-            android:exported="true"
-            android:windowSoftInputMode="adjustResize">
+            android:exported="true">
+
+            <!-- Этот блок отвечает за запуск приложения (кнопка на рабочем столе) -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Этот блок перехватывает ссылки из QR-кода -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https"
+                    android:host="phoenixik157.github.io"
+                    android:pathPrefix="/recipe-web/recipe.html" />
             </intent-filter>
         </activity>
     </application>
