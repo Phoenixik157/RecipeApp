@@ -150,9 +150,19 @@ class RecipeDetailFragment : Fragment() {
             }
 
             // Статус: есть / нет
+            // Статус: есть / нет / замена
             val status = TextView(requireContext()).apply {
-                text = if (item.haveIt) "✅" else "❌"
                 textSize = 18f
+                if (item.haveIt) {
+                    text = "✅"
+                } else if (item.replacement != null) {
+                    text = "🔄 ${item.replacement}"
+                    setTextColor(0xFFFFA000.toInt())
+                    textSize = 12f // поменьше размер для текста
+                    setTypeface(null, android.graphics.Typeface.BOLD)
+                } else {
+                    text = "❌"
+                }
             }
 
             row.addView(emoji)

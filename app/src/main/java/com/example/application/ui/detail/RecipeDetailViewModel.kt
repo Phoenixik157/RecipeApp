@@ -17,7 +17,8 @@ data class IngredientWithQty(
     val ingredient: IngredientEntity,
     val quantity: Double,
     val unit: String,
-    val haveIt: Boolean      // есть ли у пользователя в холодильнике
+    val haveIt: Boolean,      // есть ли у пользователя в холодильнике
+    val replacement: String? = null
 )
 
 class RecipeDetailViewModel(application: Application) : AndroidViewModel(application) {
@@ -44,7 +45,11 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
             _recipe.value = recipe
             _servings.value = recipe.baseServings
 
-            val userIds = db.userProductDao().getAllIdsOnce().toSet()
+            // Получаем ID и НАЗВАНИЯ продуктов из холодильника
+            val userIds = db.userProductDao().getAllIdsOnce()
+            val userProductsList = db.ingredientDao().getByIds(userIds)
+            val userProductNames = userProductsList.map { it.name.lowercase() }.toSet()
+
             val links = db.recipeIngredientDao().getByRecipeId(recipeId)
             val ingIds = links.map { it.ingredientId }
             val ings = db.ingredientDao().getByIds(ingIds)
@@ -52,11 +57,23 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
 
             _ingredients.value = links.mapNotNull { link ->
                 map[link.ingredientId]?.let { ing ->
+                    val haveIt = link.ingredientId in userIds
+                    var replacement: String? = null
+
+                    // Если ингредиента нет, ищем ему замену
+                    if (!haveIt) {
+                        replacement = com.example.application.utils.ReplacementManager.findReplacement(
+                            ing.name,
+                            userProductNames
+                        )
+                    }
+
                     IngredientWithQty(
                         ingredient = ing,
                         quantity = link.quantity,
                         unit = link.unit,
-                        haveIt = link.ingredientId in userIds
+                        haveIt = haveIt,
+                        replacement = replacement
                     )
                 }
             }
