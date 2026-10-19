@@ -102,4 +102,123 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             }
         }
     }
+
+    // --- ИМПОРТ ИЗ JSON ---
+    fun importFromJson(uri: Uri, onResult: (Boolean, String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    val jsonString = getApplication<Application>().contentResolver.openInputStream(uri)
+                        ?.bufferedReader()?.use { it.readText() } ?: return@withContext
+
+                    val root = JSONObject(jsonString)
+
+                    // 1. Удаляем текущие пользовательские данные перед импортом
+                    db.userProductDao().clear()
+                    db.achievementDao().clear()
+                    db.cookingHistoryDao().clear()
+                    db.recipeDao().deleteAllUserRecipes()
+
+                    // 2. Статистика
+                    if (root.has("stats")) {
+                        val s = root.getJSONObject("stats")
+                        val currentStats = db.userStatsDao().get() ?: UserStatsEntity()
+                        db.userStatsDao().save(currentStats.copy(
+                            totalXp = s.optInt("totalXp", 0),
+                            level = s.optInt("level", 1),
+                            dishesCooked = s.optInt("dishesCooked", 0)
+                        ))
+                    }
+
+                    // 3. Рецепты
+                    if (root.has("recipes")) {
+                        val arr = root.getJSONArray("recipes")
+                        for (i in 0 until arr.length()) {
+                            val obj = arr.getJSONObject(i)
+                            val recipe = RecipeEntity(
+                                id = obj.getLong("id"),
+                                title = obj.getString("title"),
+                                description = obj.optString("description", ""),
+                                cookingTimeMinutes = obj.optInt("cookingTimeMinutes", 30),
+                                complexity = obj.optInt("complexity", 1),
+                                baseServings = obj.optInt("baseServings", 2),
+                                instructions = obj.optString("instructions", ""),
+                                categoryId = obj.getLong("categoryId"),
+                                isUserRecipe = true
+                            )
+                            db.recipeDao().insert(recipe)
+                        }
+                    }
+
+                    // 4. Ингредиенты рецептов
+                    if (root.has("recipe_ingredients")) {
+                        val arr = root.getJSONArray("recipe_ingredients")
+                        val links = mutableListOf<RecipeIngredientEntity>()
+                        for (i in 0 until arr.length()) {
+                            val obj = arr.getJSONObject(i)
+                            links.add(RecipeIngredientEntity(
+                                recipeId = obj.getLong("recipeId"),
+                                ingredientId = obj.getLong("ingredientId"),
+                                quantity = obj.optDouble("quantity", 0.0),
+                                unit = obj.optString("unit", "")
+                            ))
+                        }
+                        if (links.isNotEmpty()) db.recipeIngredientDao().insertAll(links)
+                    }
+
+                    // 5. Продукты в холодильнике
+                    if (root.has("user_products")) {
+                        val arr = root.getJSONArray("user_products")
+                        for (i in 0 until arr.length()) {
+                            db.userProductDao().insert(UserProductEntity(arr.getLong(i)))
+                        }
+                    }
+
+                    // 6. Достижения
+                    if (root.has("achievements")) {
+                        val arr = root.getJSONArray("achievements")
+                        for (i in 0 until arr.length()) {
+                            db.achievementDao().insert(AchievementEntity(arr.getString(i)))
+                        }
+                    }
+
+                    // 7. История
+                    if (root.has("history")) {
+                        val arr = root.getJSONArray("history")
+                        for (i in 0 until arr.length()) {
+                            val obj = arr.getJSONObject(i)
+                            db.cookingHistoryDao().insert(CookingHistoryEntity(
+                                recipeId = obj.getLong("recipeId"),
+                                cookedAt = obj.getLong("cookedAt"),
+                                servings = obj.optInt("servings", 2),
+                                xpEarned = obj.optInt("xpEarned", 0)
+                            ))
+                        }
+                    }
+                }
+                onResult(true, "Данные успешно восстановлены")
+            } catch (e: Exception) {
+                onResult(false, "Ошибка импорта: ${e.message}")
+            }
+        }
+    }
+
+    // --- ОЧИСТКА ВСЕХ ДАННЫХ ---
+    fun clearAllData(onResult: (Boolean, String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    // Полностью очищаем БД
+                    db.clearAllTables()
+
+                    // Заново наполняем базовыми категориями и рецептами
+                    com.example.application.data.local.DatabaseSeeder.seed(getApplication(), db)
+                    com.example.application.data.local.RecipeJsonImporter.importFromJson(getApplication(), db)
+                }
+                onResult(true, "Все данные очищены. Приложение начинается с нуля.")
+            } catch (e: Exception) {
+                onResult(false, "Ошибка очистки: ${e.message}")
+            }
+        }
+    }
 }

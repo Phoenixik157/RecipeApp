@@ -60,4 +60,7 @@ interface RecipeDao {
 
     @Query("SELECT * FROM recipes WHERE isUserRecipe = 1 ORDER BY updatedAt DESC")
     suspend fun getUserRecipesOnce(): List<RecipeEntity>
+
+    @Query("DELETE FROM recipes WHERE isUserRecipe = 1")
+    suspend fun deleteAllUserRecipes()
 }

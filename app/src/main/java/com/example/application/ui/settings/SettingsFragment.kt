@@ -16,6 +16,7 @@ import com.example.application.R
 import com.example.application.viewmodels.SettingsViewModel
 import kotlinx.coroutines.launch
 
+
 class SettingsFragment : Fragment() {
 
     private val viewModel: SettingsViewModel by viewModels()
@@ -29,6 +30,16 @@ class SettingsFragment : Fragment() {
         }
     }
 
+    // Лаунчер для выбора файла для импорта
+    private val importLauncher = registerForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri ?: return@registerForActivityResult
+        viewModel.importFromJson(uri) { success, msg ->
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,22 +48,28 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Тёмная тема (пока заглушка)
-        view.findViewById<Switch>(R.id.switchDarkTheme).isChecked = true
-
         // Экспорт
         view.findViewById<android.widget.LinearLayout>(R.id.rowExport).setOnClickListener {
             exportLauncher.launch("recipe_backup.json")
         }
 
-        // Импорт (пока заглушка)
+        // Импорт
         view.findViewById<android.widget.LinearLayout>(R.id.rowImport).setOnClickListener {
-            Toast.makeText(requireContext(), "Импорт скоро будет", Toast.LENGTH_SHORT).show()
+            importLauncher.launch(arrayOf("application/json"))
         }
 
-        // Очистка (пока заглушка)
+        // Очистка
         view.findViewById<android.widget.LinearLayout>(R.id.rowClear).setOnClickListener {
-            Toast.makeText(requireContext(), "Очистка скоро будет", Toast.LENGTH_SHORT).show()
+            AlertDialog.Builder(requireContext())
+                .setTitle("Очистить все данные?")
+                .setMessage("Ваши рецепты, история и прогресс будут удалены безвозвратно. Базовые рецепты восстановятся автоматически.")
+                .setPositiveButton("Очистить") { _, _ ->
+                    viewModel.clearAllData { success, msg ->
+                        Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
+                    }
+                }
+                .setNegativeButton("Отмена", null)
+                .show()
         }
     }
 }
