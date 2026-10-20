@@ -134,6 +134,17 @@ class HomeFragment : Fragment() {
             viewModel.setSearchQuery(text?.toString().orEmpty())
         }
 
+        // Кнопка наверх
+        val scrollView = view.findViewById<androidx.core.widget.NestedScrollView>(R.id.scrollView)
+        val fabTop = view.findViewById<FloatingActionButton>(R.id.fabScrollTop)
+
+        scrollView.setOnScrollChangeListener { _, _, scrollY, _, _ ->
+            if (scrollY > 500) fabTop.show() else fabTop.hide()
+        }
+        fabTop.setOnClickListener {
+            scrollView.smoothScrollTo(0, 0)
+        }
+
         // Клик по чипсу минимум покупок
         view.findViewById<TextView>(R.id.filterBtn).setOnClickListener {
             val sheet = FilterBottomSheet()
