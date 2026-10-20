@@ -55,17 +55,15 @@
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/avatarText"
+                    <ImageView
+                        android:id="@+id/avatarImage"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:layout_marginStart="10dp"
                         android:background="#FF7043"
-                        android:gravity="center"
-                        android:text="ШФ"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
+                        android:padding="6dp"
+                        android:src="@android:drawable/ic_menu_myplaces"
+                        app:tint="#FFFFFF" />
                 </LinearLayout>
 
                 <LinearLayout
