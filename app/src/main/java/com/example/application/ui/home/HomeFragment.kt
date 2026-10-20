@@ -44,60 +44,84 @@ class HomeFragment : Fragment() {
         recycler.adapter = adapter
 
         // Ряд продуктов + кнопка "Добавить"
-        val ingredientsRow = view.findViewById<LinearLayout>(R.id.ingredientsRow)
-        val popular = listOf(
-            Triple("🥚", "Яйца", "яйца"),
-            Triple("🥛", "Молоко", "молоко"),
-            Triple("🧅", "Лук", "лук"),
-            Triple("🍅", "Помидор", "помидор"),
-            Triple("🥩", "Мясо", "говядина")
-        )
-        popular.forEach { (emoji, label, _) ->
-            val item = LinearLayout(requireContext()).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = android.view.Gravity.CENTER_HORIZONTAL
-                setPadding(0, 0, 24, 0)
-            }
-            val iconBox = TextView(requireContext()).apply {
-                text = emoji
-                textSize = 24f
-                gravity = android.view.Gravity.CENTER
-                layoutParams = LinearLayout.LayoutParams(104, 104)
-                setBackgroundColor(0xFF1E1E1E.toInt())
-            }
-            val text = TextView(requireContext()).apply {
-                text = label
-                textSize = 11f
-                setTextColor(0xFF9E9E9E.toInt())
-                gravity = android.view.Gravity.CENTER
-            }
-            item.addView(iconBox)
-            item.addView(text)
-            ingredientsRow.addView(item)
-        }
+        // Подписка на продукты пользователя, чтобы обновлять ряд
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val db = com.example.application.data.local.AppDatabase.getInstance(requireContext())
+                db.userProductDao().getAll().collect { userProducts ->
+                    val ingredientsRow = view.findViewById<LinearLayout>(R.id.ingredientsRow)
+                    ingredientsRow.removeAllViews()
 
-        val addBtn = LinearLayout(requireContext()).apply {
-            orientation = LinearLayout.VERTICAL
-            gravity = android.view.Gravity.CENTER_HORIZONTAL
+                    // 1. Кнопка "Добавить" ВСЕГДА первая
+                    val addBtn = LinearLayout(requireContext()).apply {
+                        orientation = LinearLayout.VERTICAL
+                        gravity = android.view.Gravity.CENTER_HORIZONTAL
+                        setPadding(0, 0, 24, 0)
+                    }
+                    val addIcon = TextView(requireContext()).apply {
+                        text = "+"
+                        textSize = 22f
+                        setTextColor(0xFFFFFFFF.toInt())
+                        gravity = android.view.Gravity.CENTER
+                        layoutParams = LinearLayout.LayoutParams(104, 104)
+                        setBackgroundColor(0xFFFF7043.toInt())
+                    }
+                    val addLabel = TextView(requireContext()).apply {
+                        text = "Добавить"
+                        textSize = 11f
+                        setTextColor(0xFFFF7043.toInt())
+                        gravity = android.view.Gravity.CENTER
+                    }
+                    addBtn.addView(addIcon)
+                    addBtn.addView(addLabel)
+                    addBtn.setOnClickListener { openProductsSheet() }
+                    ingredientsRow.addView(addBtn)
+
+                    // 2. Отмеченные продукты
+                    if (userProducts.isNotEmpty()) {
+                        val ids = userProducts.map { it.ingredientId }
+                        val ings = db.ingredientDao().getByIds(ids)
+
+                        ings.forEach { ing ->
+                            val item = LinearLayout(requireContext()).apply {
+                                orientation = LinearLayout.VERTICAL
+                                gravity = android.view.Gravity.CENTER_HORIZONTAL
+                                setPadding(0, 0, 24, 0)
+                            }
+                            val iconBox = TextView(requireContext()).apply {
+                                text = ing.emoji
+                                textSize = 24f
+                                gravity = android.view.Gravity.CENTER
+                                layoutParams = LinearLayout.LayoutParams(104, 104)
+                                setBackgroundColor(0xFF1E1E1E.toInt())
+                            }
+                            // Берем первое слово для подписи, чтобы не ломать верстку
+                            val shortName = ing.displayName.split(" ").firstOrNull() ?: ing.displayName
+                            val text = TextView(requireContext()).apply {
+                                text = shortName
+                                textSize = 11f
+                                setTextColor(0xFF9E9E9E.toInt())
+                                gravity = android.view.Gravity.CENTER
+                                maxLines = 1
+                                ellipsize = android.text.TextUtils.TruncateAt.END
+                            }
+                            item.addView(iconBox)
+                            item.addView(text)
+
+                            // Клик по ингредиенту — показываем инфу
+                            item.setOnClickListener {
+                                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                                    .setTitle(ing.displayName)
+                                    .setMessage("Категория: ${ing.category}\nСинонимы: ${ing.synonyms.ifEmpty { "нет" }}")
+                                    .setPositiveButton("ОК", null)
+                                    .show()
+                            }
+                            ingredientsRow.addView(item)
+                        }
+                    }
+                }
+            }
         }
-        val addIcon = TextView(requireContext()).apply {
-            text = "+"
-            textSize = 22f
-            setTextColor(0xFFFFFFFF.toInt())
-            gravity = android.view.Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(104, 104)
-            setBackgroundColor(0xFFFF7043.toInt())
-        }
-        val addLabel = TextView(requireContext()).apply {
-            text = "Добавить"
-            textSize = 11f
-            setTextColor(0xFFFF7043.toInt())
-            gravity = android.view.Gravity.CENTER
-        }
-        addBtn.addView(addIcon)
-        addBtn.addView(addLabel)
-        addBtn.setOnClickListener { openProductsSheet() }
-        ingredientsRow.addView(addBtn)
 
         // FAB
         view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
