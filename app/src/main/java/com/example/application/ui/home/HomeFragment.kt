@@ -98,7 +98,7 @@ class HomeFragment : Fragment() {
                             layoutParams = LinearLayout.LayoutParams(104, 104)
                             setBackgroundColor(0xFF1E1E1E.toInt())
                         }
-                        val shortName = ing.displayName.split(" ").firstOrNull() ?: ing.displayName
+                        val shortName = com.example.application.utils.TextUtils.capitalize(ing.displayName).split(" ").firstOrNull() ?: com.example.application.utils.TextUtils.capitalize(ing.displayName)
                         val text = TextView(requireContext()).apply {
                             text = shortName
                             textSize = 11f
@@ -114,7 +114,7 @@ class HomeFragment : Fragment() {
                         // ДИАЛОГ УДАЛЕНИЯ
                         item.setOnClickListener {
                             androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                                .setTitle(ing.displayName)
+                                .setTitle(com.example.application.utils.TextUtils.capitalize(ing.displayName))
                                 .setPositiveButton("ОК", null)
                                 .setNegativeButton("Удалить") { _, _ ->
                                     viewLifecycleOwner.lifecycleScope.launch {

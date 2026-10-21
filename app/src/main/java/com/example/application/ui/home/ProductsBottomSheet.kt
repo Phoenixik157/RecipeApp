@@ -147,7 +147,7 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
                 val row = layoutInflater.inflate(R.layout.item_product_checkbox, container, false)
                 val checkBox = row.findViewById<View>(R.id.checkBox)
                 val name = row.findViewById<TextView>(R.id.productName)
-                name.text = ingredient.displayName
+                name.text = com.example.application.utils.TextUtils.capitalize(ingredient.displayName)
 
                 // Функция обновления визуального состояния строки
                 fun update() {
