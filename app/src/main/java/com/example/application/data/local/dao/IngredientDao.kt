@@ -50,4 +50,7 @@ interface IngredientDao {
 
     @Query("SELECT * FROM ingredients ORDER BY displayName ASC")
     suspend fun getAllOnce(): List<IngredientEntity>
+
+    @Query("SELECT * FROM ingredients WHERE id IN (SELECT ingredientId FROM user_products)")
+    fun getAvailableIngredientsFlow(): Flow<List<IngredientEntity>>
 }
