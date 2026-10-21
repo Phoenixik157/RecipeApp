@@ -184,8 +184,21 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        // Раскрываем панель на полную высоту
-        (dialog as? com.google.android.material.bottomsheet.BottomSheetDialog)?.behavior
-            ?.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        val dialog = dialog as? com.google.android.material.bottomsheet.BottomSheetDialog
+        val bottomSheet = dialog?.findViewById<android.view.View>(com.google.android.material.R.id.design_bottom_sheet)
+
+        if (bottomSheet != null) {
+            val behavior = com.google.android.material.bottomsheet.BottomSheetBehavior.from(bottomSheet)
+
+            // Устанавливаем высоту 3/4 экрана
+            val screenHeight = resources.displayMetrics.heightPixels
+            bottomSheet.layoutParams.height = (screenHeight * 0.75).toInt()
+            bottomSheet.requestLayout()
+
+            // Возвращаем возможность стягивать шторку
+            behavior.isDraggable = true
+            behavior.skipCollapsed = true
+            behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        }
     }
 }

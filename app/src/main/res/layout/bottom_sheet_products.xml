@@ -61,7 +61,7 @@
         android:textColorHint="#9E9E9E"
         android:textSize="14sp" />
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -73,7 +73,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="20dp"
             android:paddingBottom="12dp" />
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
