@@ -123,10 +123,16 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
 
         val titles = mapOf(
             "vegetables" to "🥬 ОВОЩИ",
-            "meat" to "🥩 МЯСО И РЫБА",
-            "dairy" to "🥛 МОЛОЧКА",
+            "fruits" to "🍎 ФРУКТЫ И ЯГОДЫ",
+            "meat" to "🥩 МЯСО И ПТИЦА",
+            "fish" to "🐟 РЫБА И МОРЕПРОДУКТЫ",
+            "dairy" to "🥛 МОЛОЧКА И ЯЙЦА",
             "grocery" to "🍚 БАКАЛЕЯ",
-            "other" to "ПРОЧЕЕ"
+            "bakery" to "🍞 ХЛЕБ И ВЫПЕЧКА",
+            "greens" to "🌿 ЗЕЛЕНЬ",
+            "spices" to "🧂 СПЕЦИИ И ПРИПРАВЫ",
+            "sweets" to "🍬 СЛАДОСТИ",
+            "other" to "🍽 ПРОЧЕЕ (Вкл. пользовательские)"
         )
 
         titles.forEach { (key, title) ->
