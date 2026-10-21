@@ -19,6 +19,8 @@ import com.example.application.R
 import com.example.application.viewmodels.HomeViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
+import com.example.application.utils.TextUtils.capitalize
+import com.example.application.utils.XpManager
 
 class HomeFragment : Fragment() {
 
@@ -98,7 +100,7 @@ class HomeFragment : Fragment() {
                             layoutParams = LinearLayout.LayoutParams(104, 104)
                             setBackgroundColor(0xFF1E1E1E.toInt())
                         }
-                        val shortName = com.example.application.utils.TextUtils.capitalize(ing.displayName).split(" ").firstOrNull() ?: com.example.application.utils.TextUtils.capitalize(ing.displayName)
+                        val shortName = capitalize(ing.displayName).split(" ").firstOrNull() ?: capitalize(ing.displayName)
                         val text = TextView(requireContext()).apply {
                             text = shortName
                             textSize = 11f
@@ -114,7 +116,7 @@ class HomeFragment : Fragment() {
                         // ДИАЛОГ УДАЛЕНИЯ
                         item.setOnClickListener {
                             androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                                .setTitle(com.example.application.utils.TextUtils.capitalize(ing.displayName))
+                                .setTitle(capitalize(ing.displayName))
                                 .setPositiveButton("ОК", null)
                                 .setNegativeButton("Удалить") { _, _ ->
                                     viewLifecycleOwner.lifecycleScope.launch {
@@ -185,7 +187,7 @@ class HomeFragment : Fragment() {
 
                     // Название уровня
                     view.findViewById<TextView>(R.id.levelBadge).text =
-                        "🔥 ${com.example.application.utils.XpManager.levelName(s.level)} ${s.level} ур."
+                        "🔥 ${XpManager.levelName(s.level)} ${s.level} ур."
 
                     // Прогресс уровня
                     val (inLevel, levelRange, _) =

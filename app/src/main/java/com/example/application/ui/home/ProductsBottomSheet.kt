@@ -15,6 +15,7 @@ import com.example.application.data.local.AppDatabase
 import com.example.application.data.local.entity.UserProductEntity
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
+import com.example.application.utils.TextUtils.capitalize
 
 class ProductsBottomSheet : BottomSheetDialogFragment() {
 
@@ -147,7 +148,7 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
                 val row = layoutInflater.inflate(R.layout.item_product_checkbox, container, false)
                 val checkBox = row.findViewById<View>(R.id.checkBox)
                 val name = row.findViewById<TextView>(R.id.productName)
-                name.text = com.example.application.utils.TextUtils.capitalize(ingredient.displayName)
+                name.text = capitalize(ingredient.displayName)
 
                 // Функция обновления визуального состояния строки
                 fun update() {
