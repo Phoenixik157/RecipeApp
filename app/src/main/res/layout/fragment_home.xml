@@ -209,7 +209,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:nestedScrollingEnabled="false"
-                android:paddingHorizontal="20dp" />
+                android:paddingHorizontal="20dp"
+                android:paddingBottom="100dp"
+                android:clipToPadding="false"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="40dp"
+                android:gravity="center"
+                android:text="Вы долистали до конца"
+                android:textColor="#9E9E9E"
+                android:textSize="12sp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
