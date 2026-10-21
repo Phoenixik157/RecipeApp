@@ -29,6 +29,15 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/clearAllBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:text="Сбросить"
+            android:textColor="#FF7043"
+            android:textSize="13sp" />
+
+        <TextView
             android:id="@+id/closeBtn"
             android:layout_width="30dp"
             android:layout_height="30dp"

@@ -102,6 +102,13 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
             }
             false // Возвращаем false, чтобы клик прошел дальше (на кнопки, чипсы и т.д.)
         }
+
+        view.findViewById<TextView>(R.id.clearAllBtn).setOnClickListener {
+            selectedIds.clear()
+            // Перерисовываем список и обновляем кнопку
+            buildGroups(groupsContainer, searchInput.text.toString())
+            updateCounter(showBtn)
+        }
     }
 
     /** Перестраивает список групп и продуктов внутри панели. */
