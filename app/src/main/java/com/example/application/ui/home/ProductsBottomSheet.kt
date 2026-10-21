@@ -88,6 +88,20 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
                 dismiss()
             }
         }
+
+        // Скрытие клавиатуры при клике мимо поиска
+        view.setOnTouchListener { v, event ->
+            if (event.action == android.view.MotionEvent.ACTION_DOWN) {
+                val imm = requireContext().getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                imm.hideSoftInputFromWindow(searchInput.windowToken, 0)
+                searchInput.clearFocus()
+            }
+            // Вызов для доступности (убирает предупреждение)
+            if (event.action == android.view.MotionEvent.ACTION_UP) {
+                v.performClick()
+            }
+            false // Возвращаем false, чтобы клик прошел дальше (на кнопки, чипсы и т.д.)
+        }
     }
 
     /** Перестраивает список групп и продуктов внутри панели. */
