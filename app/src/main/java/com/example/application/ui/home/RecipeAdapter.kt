@@ -5,22 +5,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.application.R
 import com.example.application.data.local.entity.RecipeEntity
+import com.example.application.viewmodels.RecipeWithMissing
 
 class RecipeAdapter(
     private val onClick: (RecipeEntity) -> Unit,
     private val onLongClick: ((RecipeEntity) -> Unit)? = null
-) : RecyclerView.Adapter<RecipeAdapter.RecipeViewHolder>() {
-
-    private var items: List<com.example.application.viewmodels.RecipeWithMissing> = emptyList()
-
-    fun submitList(newItems: List<com.example.application.viewmodels.RecipeWithMissing>) {
-        items = newItems
-        notifyDataSetChanged()
-    }
+) : ListAdapter<RecipeWithMissing, RecipeAdapter.RecipeViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -29,11 +25,9 @@ class RecipeAdapter(
     }
 
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
-        val item = items[position]
+        val item = getItem(position)
         holder.bind(item.recipe, item.missingCount)
     }
-
-    override fun getItemCount(): Int = items.size
 
     inner class RecipeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val image: ImageView = itemView.findViewById(R.id.recipeImage)
@@ -61,7 +55,6 @@ class RecipeAdapter(
                 )
             }
 
-            // Чипс «Не хватает: N ингр.»
             if (missingCount > 0) {
                 missing.visibility = View.VISIBLE
                 missing.text = "Не хватает: $missingCount ингр."
@@ -76,6 +69,16 @@ class RecipeAdapter(
                     true
                 }
             }
+        }
+    }
+
+    // Класс, который говорит адаптеру, какие элементы изменились
+    class DiffCallback : DiffUtil.ItemCallback<RecipeWithMissing>() {
+        override fun areItemsTheSame(oldItem: RecipeWithMissing, newItem: RecipeWithMissing): Boolean {
+            return oldItem.recipe.id == newItem.recipe.id
+        }
+        override fun areContentsTheSame(oldItem: RecipeWithMissing, newItem: RecipeWithMissing): Boolean {
+            return oldItem == newItem
         }
     }
 }
