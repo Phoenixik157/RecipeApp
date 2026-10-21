@@ -152,15 +152,16 @@ class HomeFragment : Fragment() {
             scrollView.smoothScrollTo(0, 0)
         }
 
-        // Клик по чипсу минимум покупок
         view.findViewById<TextView>(R.id.filterBtn).setOnClickListener {
             val sheet = FilterBottomSheet()
             sheet.currentSort = viewModel.sortType.value
             sheet.currentMinMode = viewModel.minPurchasesMode.value
+            sheet.currentAscending = viewModel.isAscending.value
 
-            sheet.onApply = { sort, minMode ->
+            sheet.onApply = { sort, minMode, isAscending ->
                 viewModel.setSortType(sort)
-                // Включаем/выключаем режим
+                viewModel.setAscending(isAscending)
+
                 if (minMode != viewModel.minPurchasesMode.value) {
                     viewModel.toggleMinPurchasesMode()
                 }

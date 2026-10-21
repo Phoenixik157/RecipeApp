@@ -47,6 +47,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _sortType = MutableStateFlow(SortType.NAME)
     val sortType: StateFlow<SortType> = _sortType
 
+    private val _isAscending = MutableStateFlow(true)
+    val isAscending: StateFlow<Boolean> = _isAscending
+
     val categories: StateFlow<List<CategoryEntity>> = db.categoryDao()
         .getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -59,8 +62,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _selectedCategory,
         _searchQuery,
         _minPurchasesMode,
-        _sortType // <-- Добавили сюда
-    ) { all, categoryId, query, minMode, sort ->
+        _sortType,
+        _isAscending
+    ) { values ->
+        // values[0] - all, values[1] - category, ...
+        val all = values[0] as List<RecipeWithMissing>
+        val categoryId = values[1] as Long?
+        val query = values[2] as String
+        val minMode = values[3] as Boolean
+        val sort = values[4] as SortType
+        val asc = values[5] as Boolean
+
         val filtered = all.filter { item ->
             val r = item.recipe
             val matchesCategory = categoryId == null || r.categoryId == categoryId
@@ -68,17 +80,26 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             matchesCategory && matchesQuery
         }
 
-        // Сначала применяем "Минимум покупок", если он включен
-        val sorted = if (minMode) {
-            filtered.sortedBy { it.missingCount }
-        } else {
-            when (sort) {
-                SortType.NAME -> filtered.sortedBy { it.recipe.title.lowercase() }
-                SortType.TIME -> filtered.sortedBy { it.recipe.cookingTimeMinutes }
-                SortType.COMPLEXITY -> filtered.sortedBy { it.recipe.complexity }
-            }
+        // Создаем базовый компаратор для выбранной сортировки
+        val comparator = when (sort) {
+            SortType.NAME -> compareBy<RecipeWithMissing> { it.recipe.title.lowercase() }
+            SortType.TIME -> compareBy<RecipeWithMissing> { it.recipe.cookingTimeMinutes }
+            SortType.COMPLEXITY -> compareBy<RecipeWithMissing> { it.recipe.complexity }
         }
-        sorted
+
+        // Меняем направление, если нужно
+        val finalComparator = if (asc) comparator else comparator.reversed()
+
+        // Применяем сортировку
+        if (minMode) {
+            // Если включен "Минимум покупок":
+            // Сначала сортируем по недостающим продуктам,
+            // а если их одинаковое количество — применяем выбранную сортировку
+            filtered.sortedWith(compareBy<RecipeWithMissing> { it.missingCount }.then(finalComparator))
+        } else {
+            // Обычная сортировка
+            filtered.sortedWith(finalComparator)
+        }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     init {
@@ -139,6 +160,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun selectCategory(id: Long?) { _selectedCategory.value = id }
     fun setSearchQuery(q: String) { _searchQuery.value = q }
+
+    fun setAscending(asc: Boolean) {
+        _isAscending.value = asc
+    }
 
     fun setSortType(type: SortType) {
         _sortType.value = type
