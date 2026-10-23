@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_book"
         android:title="@string/nav_my_recipes" />
     <item
+        android:id="@+id/nav_add_recipe"
+        android:icon="@android:drawable/ic_input_add"
+        android:title="Создать" />
+    <item
         android:id="@+id/nav_stats"
         android:icon="@drawable/ic_stats"
         android:title="@string/nav_stats" />

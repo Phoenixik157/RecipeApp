@@ -50,11 +50,16 @@ class MyRecipesFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        // FAB (+)
         view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
-            findNavController().navigate(R.id.nav_add_recipe)
+            val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
+            bottomNav.selectedItemId = R.id.nav_add_recipe
         }
+
+        // кнопка в пустом состоянии
         view.findViewById<TextView>(R.id.createFirstBtn).setOnClickListener {
-            findNavController().navigate(R.id.nav_add_recipe)
+            val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
+            bottomNav.selectedItemId = R.id.nav_add_recipe
         }
 
         view.findViewById<EditText>(R.id.searchInput).doOnTextChanged { t, _, _, _ ->

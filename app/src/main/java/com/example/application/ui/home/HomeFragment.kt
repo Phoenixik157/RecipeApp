@@ -134,7 +134,9 @@ class HomeFragment : Fragment() {
 
         // FAB
         view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
-            findNavController().navigate(R.id.nav_add_recipe)
+            // Переключаем нижнюю панель на вкладку "Создать"
+            val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
+            bottomNav.selectedItemId = R.id.nav_add_recipe
         }
 
         // Поиск

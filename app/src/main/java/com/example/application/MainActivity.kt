@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
         // 2. Слушатель для умной подсветки вкладок
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            // Проверяем, откуда мы пришли на экран рецепта (с Главной или из Моих рецептов)
+            // Проверяем, откуда мы пришли на экран рецепта
             val isFromMyRecipes = navController.previousBackStackEntry?.destination?.id == R.id.nav_myrecipes
 
             val menuItemId = when (destination.id) {
@@ -58,18 +58,17 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_myrecipes -> R.id.nav_myrecipes
                 R.id.nav_stats -> R.id.nav_stats
                 R.id.nav_settings -> R.id.nav_settings
-
-                // Если мы на экране рецепта или добавления, подсвечиваем ту вкладку, откуда пришли
+                R.id.nav_add_recipe -> R.id.nav_add_recipe
                 R.id.nav_recipe_detail -> if (isFromMyRecipes) R.id.nav_myrecipes else R.id.nav_home
-                R.id.nav_add_recipe -> R.id.nav_home
-
                 else -> -1
             }
 
-            // Если вкладка определена и она еще не нажата, подсвечиваем её
-            if (menuItemId != -1 && binding.bottomNav.selectedItemId != menuItemId) {
-                // ВАЖНО: isChecked = true меняет цвет, но НЕ вызывает клик (нет зацикливания)
-                binding.bottomNav.menu.findItem(menuItemId)?.isChecked = true
+            // Если экран не относится ни к одной вкладке (например, детали рецепта),
+            // подсвечиваем ту, из которой пришли (isFromMyRecipes)
+            if (menuItemId != -1) {
+                if (binding.bottomNav.selectedItemId != menuItemId) {
+                    binding.bottomNav.menu.findItem(menuItemId)?.isChecked = true
+                }
             }
         }
 
