@@ -19,4 +19,5 @@ data class UserStatsEntity(
     val dailyRecipesCreated: Int = 0,
     val dailyMinPurchasesUsed: Int = 0,
     val dailyExports: Int = 0,
+    val hasExportedJson: Boolean = false
 )

@@ -75,10 +75,17 @@ object AchievementManager {
             newOnes.add(MARATHON)
         }
 
+        // Мастер бэкапа — сделал экспорт JSON
+        val stats = db.userStatsDao().get()
+        if (stats?.hasExportedJson == true && BACKUP_MASTER !in unlocked) {
+            newOnes.add(BACKUP_MASTER)
+        }
+
         // Сохраняем новые
         newOnes.forEach { id ->
             db.achievementDao().insert(AchievementEntity(id = id))
         }
+
 
         if (newOnes.isNotEmpty()) {
             _newlyUnlocked.tryEmit(newOnes)

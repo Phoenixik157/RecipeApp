@@ -17,6 +17,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.application.R
+import com.example.application.viewmodels.AddRecipeViewModel
+import com.example.application.viewmodels.IngredientRow
 import kotlinx.coroutines.launch
 
 class AddRecipeFragment : Fragment() {

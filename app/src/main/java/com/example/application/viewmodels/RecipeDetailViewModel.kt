@@ -1,4 +1,4 @@
-package com.example.application.ui.detail
+package com.example.application.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -11,7 +11,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.application.utils.XpManager
 import com.example.application.data.local.entity.CookingHistoryEntity
+import com.example.application.data.local.entity.UserStatsEntity
 import com.example.application.utils.AchievementManager
+import com.example.application.utils.ReplacementManager
 
 data class IngredientWithQty(
     val ingredient: IngredientEntity,
@@ -62,7 +64,7 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
 
                     // Если ингредиента нет, ищем ему замену
                     if (!haveIt) {
-                        replacement = com.example.application.utils.ReplacementManager.findReplacement(
+                        replacement = ReplacementManager.findReplacement(
                             ing.name,
                             userProductNames
                         )
@@ -106,7 +108,7 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
 
         // Общий счётчик приготовлений — независимо от XP
         val stats = db.userStatsDao().get()
-            ?: com.example.application.data.local.entity.UserStatsEntity()
+            ?: UserStatsEntity()
         db.userStatsDao().save(stats.copy(dishesCooked = stats.dishesCooked + 1))
 
         AchievementManager.checkAll(db)

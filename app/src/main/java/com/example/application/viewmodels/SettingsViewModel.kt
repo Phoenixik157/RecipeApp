@@ -108,6 +108,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     getApplication<Application>().contentResolver.openOutputStream(uri)?.use { out ->
                         out.write(root.toString(2).toByteArray())
                     }
+
+                    // Отмечаем ачивку
+                    val stats = db.userStatsDao().get()
+                    if (stats != null && !stats.hasExportedJson) {
+                        db.userStatsDao().save(stats.copy(hasExportedJson = true))
+                        com.example.application.utils.AchievementManager.checkAll(db)
+                    }
                 }
                 onResult(true, "Экспорт завершён")
             } catch (e: Exception) {
