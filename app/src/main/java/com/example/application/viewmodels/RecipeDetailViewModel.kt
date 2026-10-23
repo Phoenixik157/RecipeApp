@@ -36,6 +36,9 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
     private val _servings = MutableStateFlow(2)
     val servings: StateFlow<Int> = _servings
 
+    private val _categoryName = MutableStateFlow("")
+    val categoryName: StateFlow<String> = _categoryName
+
     private var loaded = false
 
     fun load(recipeId: Long) {
@@ -46,6 +49,9 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
             val recipe = db.recipeDao().getById(recipeId) ?: return@launch
             _recipe.value = recipe
             _servings.value = recipe.baseServings
+
+            val category = db.categoryDao().getById(recipe.categoryId)
+            _categoryName.value = category?.name ?: "Без категории"
 
             // Получаем ID и НАЗВАНИЯ продуктов из холодильника
             val userIds = db.userProductDao().getAllIdsOnce()

@@ -69,6 +69,10 @@ class RecipeDetailFragment : Fragment() {
                     if (!recipe.imageUrl.isNullOrEmpty()) {
                         view.findViewById<android.widget.ImageView>(R.id.heroImage).load(recipe.imageUrl)
                     }
+
+                    viewModel.categoryName.collect { catName ->
+                        view.findViewById<TextView>(R.id.categoryText).text = catName
+                    }
                 }
             }
         }
