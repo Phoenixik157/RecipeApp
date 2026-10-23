@@ -35,6 +35,15 @@ object AchievementManager {
     )
     val newlyUnlocked: SharedFlow<List<String>> = _newlyUnlocked
 
+    val DESCRIPTIONS = mapOf(
+        NOVICE to "Приготовьте свое первое блюдо (нажмите «Я приготовил!» на любом рецепте).",
+        EXPERIMENTER to "Создайте 3 собственных рецепта.",
+        ECONOMIST to "Включите режим «Минимум покупок» 10 раз.",
+        GOURMET to "Приготовьте блюда из 3 разных категорий (например, суп, салат и десерт).",
+        MARATHON to "Готовьте еду 5 дней подряд (записи должны быть в разные дни).",
+        BACKUP_MASTER to "Сделайте экспорт резервной копии JSON в настройках."
+    )
+
     /** Проверяет все условия и выдаёт достижения. Возвращает id новых. */
     suspend fun checkAll(db: AppDatabase): List<String> {
         val unlocked = db.achievementDao().getIdsOnce().toSet()

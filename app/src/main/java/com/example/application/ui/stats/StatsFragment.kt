@@ -87,6 +87,20 @@ class StatsFragment : Fragment() {
             }
         }
 
+        view.findViewById<TextView>(R.id.btnViewAllLevels).setOnClickListener {
+            val levels = StringBuilder()
+            for (i in 1..15) {
+                levels.append("${com.example.application.utils.XpManager.levelName(i)} — ${com.example.application.utils.XpManager.xpForLevel(i)} XP\n")
+            }
+            levels.append("... и так до бесконечности!")
+
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Шкала уровней")
+                .setMessage(levels.toString())
+                .setPositiveButton("Закрыть", null)
+                .show()
+        }
+
         // Быстрые метрики
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -157,6 +171,7 @@ class StatsFragment : Fragment() {
         chart.setHoleColor(0xFF1E1E1E.toInt())
         chart.setDrawHoleEnabled(true)
         chart.invalidate()
+        chart.setTouchEnabled(false)
 
         // Легенда справа
         val total = slices.sumOf { it.count }
@@ -215,6 +230,7 @@ class StatsFragment : Fragment() {
         chart.axisLeft.textColor = 0xFF9E9E9E.toInt()
         chart.axisLeft.gridColor = 0xFF2C2C2C.toInt()
         chart.axisLeft.granularity = 1f
+        chart.setTouchEnabled(false)
 
         val days = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
         // Определяем день недели первого столбца — 6 дней назад от сегодня
@@ -287,6 +303,16 @@ class StatsFragment : Fragment() {
                         if (isUnlocked) 0x26FF7043.toInt() else 0xFF252525.toInt()
                     )
                     alpha = if (isUnlocked) 1f else 0.55f
+                }
+
+                cell.setOnClickListener {
+                    val desc = com.example.application.utils.AchievementManager.DESCRIPTIONS[id] ?: "Описание отсутствует."
+                    val status = if (isUnlocked) "✅ Получено" else "🔒 Не получено"
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setTitle(title)
+                        .setMessage("$status\n\nКак получить:\n$desc")
+                        .setPositiveButton("Понятно", null)
+                        .show()
                 }
 
                 val name = TextView(requireContext()).apply {
