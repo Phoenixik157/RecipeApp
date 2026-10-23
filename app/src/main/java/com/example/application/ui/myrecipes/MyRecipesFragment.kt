@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.application.R
 import com.example.application.data.local.entity.RecipeEntity
+import com.example.application.ui.home.FilterBottomSheet
 import com.example.application.ui.home.RecipeAdapter
 import com.example.application.viewmodels.MyRecipesViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -60,6 +61,23 @@ class MyRecipesFragment : Fragment() {
             viewModel.setQuery(t?.toString().orEmpty())
         }
 
+        // Настройка кнопки фильтров
+        view.findViewById<TextView>(R.id.filterBtn).setOnClickListener {
+            val sheet = FilterBottomSheet()
+            sheet.showMinPurchases = false // Отключаем режим "Минимум покупок"
+
+            // Передаем текущее состояние из ViewModel в BottomSheet
+            sheet.currentSort = viewModel.sortType.value
+            sheet.currentAscending = viewModel.isAscending.value
+            sheet.currentMinMode = false // Режим покупок всегда выключен здесь
+
+            sheet.onApply = { sort, _, isAscending -> // minMode игнорируем
+                viewModel.setSortType(sort)
+                viewModel.setAscending(isAscending)
+            }
+            sheet.show(parentFragmentManager, "FilterBottomSheet")
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.recipes.collect { list ->
@@ -82,6 +100,19 @@ class MyRecipesFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        view.findViewById<TextView>(R.id.filterBtn).setOnClickListener {
+            val sheet = FilterBottomSheet()
+            sheet.showMinPurchases = false // Отключаем режим минимума покупок
+            sheet.currentSort = viewModel.sortType.value
+            sheet.currentAscending = viewModel.isAscending.value
+
+            sheet.onApply = { sort, _, isAscending -> // minMode игнорируем
+                viewModel.setSortType(sort)
+                viewModel.setAscending(isAscending)
+            }
+            sheet.show(parentFragmentManager, "FilterBottomSheet")
         }
     }
 

@@ -17,6 +17,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     var currentSort: SortType = SortType.NAME
     var currentMinMode: Boolean = false
     var currentAscending: Boolean = true
+    var showMinPurchases: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,6 +32,12 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         val radioGroup = view.findViewById<RadioGroup>(R.id.sortRadioGroup)
         val switchMin = view.findViewById<Switch>(R.id.switchMinPurchases)
         val switchDesc = view.findViewById<Switch>(R.id.switchDescending)
+
+        if (!showMinPurchases) {
+            // Скрываем переключатель и его заголовок, если нужно
+            switchMin.visibility = View.GONE
+            (switchMin.parent as View).visibility = View.GONE
+        }
 
         // Устанавливаем текущие значения
         switchMin.isChecked = currentMinMode
