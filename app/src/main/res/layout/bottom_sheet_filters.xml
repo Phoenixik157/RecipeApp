@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#1A1A1A"
+    android:background="@drawable/bg_bottom_sheet"
     android:orientation="vertical"
-    android:padding="20dp">
+    android:padding="24dp">
 
     <!-- Ручка для свайпа -->
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:background="#2C2C2C" />
+        android:layout_marginBottom="20dp"
+        android:background="#4D9CA3AF" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
         android:text="Фильтры и сортировка"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textColor="@color/text_primary"
+        android:textSize="18sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/inter_regular"
         android:text="Сортировать по:"
-        android:textColor="#9E9E9E"
-        android:textSize="13sp" />
+        android:textColor="@color/text_secondary"
+        android:textSize="14sp" />
 
     <RadioGroup
         android:id="@+id/sortRadioGroup"
@@ -40,29 +42,38 @@
             android:id="@+id/radioName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:buttonTint="@color/purple_primary"
+            android:fontFamily="@font/inter_regular"
             android:text="По названию"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/radioTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:buttonTint="@color/purple_primary"
+            android:fontFamily="@font/inter_regular"
             android:text="По времени готовки"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
 
         <RadioButton
             android:id="@+id/radioComplexity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:buttonTint="@color/purple_primary"
+            android:fontFamily="@font/inter_regular"
             android:text="По сложности"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
     </RadioGroup>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="16dp"
-        android:background="#2C2C2C" />
+        android:background="@color/bg_dark" />
 
     <!-- Минимум покупок -->
     <LinearLayout
@@ -75,22 +86,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="🛒 Минимум покупок"
-            android:textColor="#FFFFFF"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/inter_regular"
+            android:text="Минимум покупок"
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
 
         <Switch
             android:id="@+id/switchMinPurchases"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/text_primary"
+            app:trackTint="@color/purple_primary" />
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="16dp"
-        android:background="#2C2C2C" />
+        android:background="@color/bg_dark" />
 
     <!-- По убыванию -->
     <LinearLayout
@@ -103,26 +116,30 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:fontFamily="@font/inter_regular"
             android:text="По убыванию"
-            android:textColor="#FFFFFF"
-            android:textSize="14sp" />
+            android:textColor="@color/text_primary"
+            android:textSize="16sp" />
 
         <Switch
             android:id="@+id/switchDescending"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:thumbTint="@color/text_primary"
+            app:trackTint="@color/purple_primary" />
     </LinearLayout>
 
-    <TextView
+    <!-- Новая кнопка MaterialButton -->
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/applyBtn"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:background="#FF7043"
-        android:gravity="center"
-        android:paddingVertical="14dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="32dp"
+        android:fontFamily="@font/montserrat_bold"
         android:text="Применить"
-        android:textColor="#FFFFFF"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        android:textAllCaps="false"
+        android:textColor="@color/text_primary"
+        android:textSize="16sp"
+        app:backgroundTint="@color/purple_primary"
+        app:cornerRadius="16dp" />
 </LinearLayout>
