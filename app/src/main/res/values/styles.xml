@@ -30,4 +30,14 @@
         <item name="android:textColor">#9E9E9E</item>
         <item name="android:textSize">12sp</item>
     </style>
+
+    <style name="BottomNavTextActive" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/montserrat_bold</item> <!-- Или inter_medium -->
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="BottomNavTextInactive" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>
