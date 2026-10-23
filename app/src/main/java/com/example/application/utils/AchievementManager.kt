@@ -69,7 +69,7 @@ object AchievementManager {
         if (GOURMET !in unlocked && db.cookingHistoryDao().distinctCategoriesOnce() >= 3) {
             newOnes.add(GOURMET)
         }
-        
+
         // Марафон — 5 дней ПОДРЯД
         val history = db.cookingHistoryDao().getAllOnce()
         val uniqueDays = history.map {

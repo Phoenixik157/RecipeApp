@@ -137,19 +137,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Переключение режима вручную (по клику на чипс). */
-    fun toggleMinPurchasesMode() {
-        if (_userHasProducts.value) {
-            val newValue = !_minPurchasesMode.value
-            _minPurchasesMode.value = newValue
-            if (newValue) {
-                viewModelScope.launch {
-                    // Счётчик для Economist — независимо от XP
-                    db.usageCounterDao().increment(AchievementManager.KEY_MIN_PURCHASES)
-                    // XP по дневному лимиту
-                    XpManager.award(db, XpManager.ACTION_MIN_PURCHASES)
-                    // Проверка достижений
-                    AchievementManager.checkAll(db)
-                }
+    fun setMinPurchasesMode(enabled: Boolean) {
+        if (_minPurchasesMode.value == enabled) return
+        _minPurchasesMode.value = enabled
+
+        if (enabled) {
+            viewModelScope.launch {
+                db.usageCounterDao().increment(com.example.application.utils.AchievementManager.KEY_MIN_PURCHASES)
+                com.example.application.utils.XpManager.award(db, com.example.application.utils.XpManager.ACTION_MIN_PURCHASES)
+                com.example.application.utils.AchievementManager.checkAll(db)
             }
         }
     }

@@ -163,10 +163,7 @@ class HomeFragment : Fragment() {
             sheet.onApply = { sort, minMode, isAscending ->
                 viewModel.setSortType(sort)
                 viewModel.setAscending(isAscending)
-
-                if (minMode != viewModel.minPurchasesMode.value) {
-                    viewModel.toggleMinPurchasesMode()
-                }
+                viewModel.setMinPurchasesMode(minMode)
             }
             sheet.show(parentFragmentManager, "FilterBottomSheet")
         }
