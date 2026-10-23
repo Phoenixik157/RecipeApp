@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import com.example.application.utils.XpManager
 import com.example.application.utils.AchievementManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 data class RecipeWithMissing(
     val recipe: RecipeEntity,
@@ -113,30 +115,24 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** Пересчитывает, сколько ингредиентов не хватает для каждого рецепта. */
     fun recalculateMissing() {
         viewModelScope.launch {
-            val userIngredientIds = db.userProductDao().getAllIds().toSet()
-            val hadProducts = _userHasProducts.value
-            _userHasProducts.value = userIngredientIds.isNotEmpty()
+            // Тяжелые вычисления уводим в фоновый поток
+            val result = withContext(Dispatchers.Default) {
+                val userIngredientIds = db.userProductDao().getAllIds().toSet()
+                val allRecipes = db.recipeDao().getAllOnce()
+                val allLinks = db.recipeIngredientDao().getAllLinksOnce()
+                val linksByRecipe = allLinks.groupBy { it.recipeId }
 
-            // Если продуктов не было — выключаем режим.
-            // Если продуктов не было, а теперь появились — включаем автоматически.
-            if (!_userHasProducts.value) {
-                _minPurchasesMode.value = false
-            } else if (!hadProducts) {
-                _minPurchasesMode.value = true
+                allRecipes.map { recipe ->
+                    val links = linksByRecipe[recipe.id].orEmpty()
+                    val total = links.size
+                    val have = links.count { it.ingredientId in userIngredientIds }
+                    RecipeWithMissing(recipe, total - have, total)
+                }
             }
-            // Если продукты уже были — оставляем текущее состояние (вкл или выкл).
 
-            val allRecipes = db.recipeDao().getAllOnce()
-            val allLinks = db.recipeIngredientDao().getAllOnce()
-            val linksByRecipe = allLinks.groupBy { it.recipeId }
-
-            val list = allRecipes.map { recipe ->
-                val links = linksByRecipe[recipe.id].orEmpty()
-                val total = links.size
-                val have = links.count { it.ingredientId in userIngredientIds }
-                RecipeWithMissing(recipe, total - have, total)
-            }
-            _allRecipesWithMissing.value = list
+            // Возвращаемся на главный поток для обновления UI
+            _minPurchasesMode.value = db.userProductDao().getAllIds().isNotEmpty()
+            _allRecipesWithMissing.value = result
         }
     }
 
