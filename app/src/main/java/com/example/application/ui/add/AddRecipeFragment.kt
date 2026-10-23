@@ -7,9 +7,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
-import android.widget.Spinner
+import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -19,13 +20,14 @@ import androidx.navigation.fragment.findNavController
 import com.example.application.R
 import com.example.application.viewmodels.AddRecipeViewModel
 import com.example.application.viewmodels.IngredientRow
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kotlinx.coroutines.launch
 
 class AddRecipeFragment : Fragment() {
 
     private val viewModel: AddRecipeViewModel by viewModels()
     private var currentDifficulty = 2
-    private var currentServings = 2
+    private var currentServings = 1
     private val ingredientRows = mutableListOf<View>()
     private var categoriesIds: List<Long> = emptyList()
 
@@ -37,18 +39,29 @@ class AddRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<TextView>(R.id.backBtn).setOnClickListener { findNavController().navigateUp() }
-        view.findViewById<TextView>(R.id.cancelBtn).setOnClickListener { findNavController().navigateUp() }
+        // Объявляем переменные
+        val backBtn = view.findViewById<View>(R.id.backBtn)
+        val cancelBtn = view.findViewById<View>(R.id.cancelBtn)
+        val saveBtn = view.findViewById<View>(R.id.saveBtn)
+        val ingredientsContainer = view.findViewById<LinearLayout>(R.id.ingredientsContainer)
+        val categoryDropdown = view.findViewById<MaterialAutoCompleteTextView>(R.id.categoryDropdown)
+        val servingsEditText = view.findViewById<EditText>(R.id.servingsValue)
+        val servingsSeekBar = view.findViewById<SeekBar>(R.id.servingsSeekBar)
+        var isUpdatingServings = false
 
-        // Сложность
+        // Кнопки "Назад" и "Отмена"
+        backBtn.setOnClickListener { findNavController().navigateUp() }
+        cancelBtn.setOnClickListener { findNavController().navigateUp() }
+
+        // --- Сложность ---
         val easy = view.findViewById<TextView>(R.id.diffEasy)
         val medium = view.findViewById<TextView>(R.id.diffMedium)
         val hard = view.findViewById<TextView>(R.id.diffHard)
         fun updateDiffUI() {
             listOf(easy to 1, medium to 2, hard to 3).forEach { (tv, level) ->
                 val active = currentDifficulty == level
-                tv.setBackgroundColor(if (active) 0xFFFF7043.toInt() else 0xFF1E1E1E.toInt())
-                tv.setTextColor(if (active) 0xFFFFFFFF.toInt() else 0xFF9E9E9E.toInt())
+                tv.isSelected = active
+                tv.setTextColor(androidx.core.content.ContextCompat.getColor(requireContext(), if (active) R.color.text_primary else R.color.text_secondary))
             }
         }
         easy.setOnClickListener { currentDifficulty = 1; updateDiffUI() }
@@ -56,17 +69,68 @@ class AddRecipeFragment : Fragment() {
         hard.setOnClickListener { currentDifficulty = 3; updateDiffUI() }
         updateDiffUI()
 
-        // Порции
-        val servingsText = view.findViewById<TextView>(R.id.servingsValue)
-        view.findViewById<TextView>(R.id.btnMinus).setOnClickListener {
-            if (currentServings > 1) { currentServings--; servingsText.text = currentServings.toString() }
-        }
-        view.findViewById<TextView>(R.id.btnPlus).setOnClickListener {
-            if (currentServings < 12) { currentServings++; servingsText.text = currentServings.toString() }
+        // --- Порции ---
+        fun updateServingsUI(newValue: Int) {
+            if (isUpdatingServings) return
+            isUpdatingServings = true
+            currentServings = newValue.coerceIn(1, 1488)
+            servingsEditText.setText(currentServings.toString())
+            servingsEditText.setSelection(servingsEditText.text.length)
+            servingsSeekBar.progress = currentServings - 1
+            isUpdatingServings = false
         }
 
-        // Ингредиенты
-        val ingredientsContainer = view.findViewById<LinearLayout>(R.id.ingredientsContainer)
+        updateServingsUI(1)
+
+        view.findViewById<View>(R.id.btnMinus).setOnClickListener { updateServingsUI(currentServings - 1) }
+        view.findViewById<View>(R.id.btnPlus).setOnClickListener { updateServingsUI(currentServings + 1) }
+
+        servingsEditText.doOnTextChanged { text, _, _, _ ->
+            if (isUpdatingServings) return@doOnTextChanged
+            val parsed = text?.toString()?.toIntOrNull()
+            if (parsed != null && parsed in 1..1488) {
+                currentServings = parsed
+                isUpdatingServings = true
+                servingsSeekBar.progress = currentServings - 1
+                isUpdatingServings = false
+            }
+        }
+
+        servingsSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser && !isUpdatingServings) {
+                    currentServings = progress + 1
+                    isUpdatingServings = true
+                    servingsEditText.setText(currentServings.toString())
+                    servingsEditText.setSelection(servingsEditText.text.length)
+                    isUpdatingServings = false
+                }
+            }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+
+        // Умная проверка при потере фокуса
+        servingsEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val text = servingsEditText.text.toString()
+                val parsed = text.toIntOrNull()
+
+                if (parsed == null || parsed < 1) {
+                    // Если пусто или меньше 1 — ставим 1
+                    updateServingsUI(1)
+                } else if (parsed > 1488) {
+                    // Если больше 1488 — ставим 1488
+                    updateServingsUI(1488)
+                    Toast.makeText(requireContext(), "Максимум 1488 порций", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Если в пределах нормы, просто синхронизируем ползунок
+                    updateServingsUI(parsed)
+                }
+            }
+        }
+
+        // --- Ингредиенты ---
         fun addIngredientRow() {
             val row = layoutInflater.inflate(R.layout.item_ingredient_row, ingredientsContainer, false)
             row.findViewById<TextView>(R.id.deleteBtn).setOnClickListener {
@@ -76,28 +140,25 @@ class AddRecipeFragment : Fragment() {
             ingredientsContainer.addView(row)
             ingredientRows.add(row)
         }
-        // Три стартовые строки
         repeat(3) { addIngredientRow() }
-        view.findViewById<TextView>(R.id.addIngredientBtn).setOnClickListener { addIngredientRow() }
+        view.findViewById<View>(R.id.addIngredientBtn).setOnClickListener { addIngredientRow() }
 
-        // Категории — заполним spinner
-        val spinner = view.findViewById<Spinner>(R.id.categorySpinner)
+        // --- Категории ---
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.categories.collect { cats ->
                     categoriesIds = cats.map { it.id }
                     val names = cats.map { it.name }
-                    spinner.adapter = ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_spinner_dropdown_item,
-                        names
-                    )
+                    categoryDropdown.setAdapter(ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, names))
+                    if (categoryDropdown.text.isNullOrEmpty() && names.isNotEmpty()) {
+                        categoryDropdown.setText(names[0], false)
+                    }
                 }
             }
         }
 
-        // Сохранить
-        view.findViewById<TextView>(R.id.saveBtn).setOnClickListener {
+        // --- Сохранить ---
+        saveBtn.setOnClickListener {
             val title = view.findViewById<EditText>(R.id.inputTitle).text.toString().trim()
             val timeStr = view.findViewById<EditText>(R.id.inputTime).text.toString().trim()
             val instructions = view.findViewById<EditText>(R.id.inputInstructions).text.toString().trim()
@@ -110,7 +171,10 @@ class AddRecipeFragment : Fragment() {
                 Toast.makeText(requireContext(), "Введите время", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val selectedCategoryId = categoriesIds.getOrNull(spinner.selectedItemPosition)
+
+            val selectedCategoryName = categoryDropdown.text.toString()
+            val selectedCategoryId = viewModel.categories.value.find { it.name == selectedCategoryName }?.id
+
             if (selectedCategoryId == null) {
                 Toast.makeText(requireContext(), "Выберите категорию", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -134,7 +198,7 @@ class AddRecipeFragment : Fragment() {
             )
         }
 
-        // Подписка на saved
+        // --- Подписка на saved ---
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.saved.collect { done ->
@@ -151,16 +215,13 @@ class AddRecipeFragment : Fragment() {
                 com.example.application.utils.AchievementManager.newlyUnlocked.collect { list ->
                     list.forEach { id ->
                         val title = com.example.application.utils.AchievementManager.TITLES[id] ?: id
-                        android.widget.Toast.makeText(
-                            requireContext(),
-                            "🏆 Достижение: $title",
-                            android.widget.Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(requireContext(), "🏆 Достижение: $title", Toast.LENGTH_LONG).show()
                     }
                 }
             }
         }
 
+        // --- РЕЖИМ РЕДАКТИРОВАНИЯ ---
         val editId = arguments?.getLong("recipeId", -1L) ?: -1L
         if (editId > 0) {
             viewLifecycleOwner.lifecycleScope.launch {
@@ -172,12 +233,14 @@ class AddRecipeFragment : Fragment() {
                 view.findViewById<EditText>(R.id.inputInstructions).setText(recipe.instructions)
 
                 currentDifficulty = recipe.complexity
-                currentServings = recipe.baseServings
-                servingsText.text = currentServings.toString()
                 updateDiffUI()
 
-                val idx = categoriesIds.indexOf(recipe.categoryId)
-                if (idx >= 0) spinner.setSelection(idx)
+                // Обновляем порции (вместо servingsText)
+                updateServingsUI(recipe.baseServings)
+
+                // Обновляем категорию (вместо spinner)
+                val catName = viewModel.categories.value.find { it.id == recipe.categoryId }?.name ?: ""
+                categoryDropdown.setText(catName, false)
 
                 val db = com.example.application.data.local.AppDatabase.getInstance(requireContext())
                 val links = db.recipeIngredientDao().getByRecipeId(editId)
