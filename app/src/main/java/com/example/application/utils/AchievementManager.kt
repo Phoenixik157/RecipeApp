@@ -69,9 +69,36 @@ object AchievementManager {
         if (GOURMET !in unlocked && db.cookingHistoryDao().distinctCategoriesOnce() >= 3) {
             newOnes.add(GOURMET)
         }
+        
+        // Марафон — 5 дней ПОДРЯД
+        val history = db.cookingHistoryDao().getAllOnce()
+        val uniqueDays = history.map {
+            java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US).format(java.util.Date(it.cookedAt))
+        }.distinct().sortedDescending()
 
-        // Марафон — записи в истории за 5+ разных дней
-        if (MARATHON !in unlocked && db.cookingHistoryDao().distinctDaysOnce() >= 5) {
+        var maxStreak = 0
+        var currentStreak = 0
+        val format = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
+        val calendar = java.util.Calendar.getInstance()
+
+        for (i in uniqueDays.indices) {
+            if (i == 0) {
+                currentStreak = 1
+            } else {
+                val d1 = format.parse(uniqueDays[i - 1])
+                val d2 = format.parse(uniqueDays[i])
+                calendar.time = d1
+                calendar.add(java.util.Calendar.DAY_OF_YEAR, -1)
+                if (calendar.time == d2) {
+                    currentStreak++
+                } else {
+                    currentStreak = 1
+                }
+            }
+            maxStreak = maxOf(maxStreak, currentStreak)
+        }
+
+        if (maxStreak >= 5 && MARATHON !in unlocked) {
             newOnes.add(MARATHON)
         }
 
