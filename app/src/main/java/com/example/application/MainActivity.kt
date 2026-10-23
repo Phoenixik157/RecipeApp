@@ -43,12 +43,34 @@ class MainActivity : AppCompatActivity() {
         // Навигация
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.navHostFragment) as NavHostFragment
-        binding.bottomNav.setupWithNavController(navHostFragment.navController)
+        val navController = navHostFragment.navController
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+        // 1. Стандартная привязка (обрабатывает клики по вкладкам и сохраняет стек)
+        binding.bottomNav.setupWithNavController(navController)
+
+        // 2. Слушатель для умной подсветки вкладок
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            // Проверяем, откуда мы пришли на экран рецепта (с Главной или из Моих рецептов)
+            val isFromMyRecipes = navController.previousBackStackEntry?.destination?.id == R.id.nav_myrecipes
+
+            val menuItemId = when (destination.id) {
+                R.id.nav_home -> R.id.nav_home
+                R.id.nav_myrecipes -> R.id.nav_myrecipes
+                R.id.nav_stats -> R.id.nav_stats
+                R.id.nav_settings -> R.id.nav_settings
+
+                // Если мы на экране рецепта или добавления, подсвечиваем ту вкладку, откуда пришли
+                R.id.nav_recipe_detail -> if (isFromMyRecipes) R.id.nav_myrecipes else R.id.nav_home
+                R.id.nav_add_recipe -> R.id.nav_home
+
+                else -> -1
+            }
+
+            // Если вкладка определена и она еще не нажата, подсвечиваем её
+            if (menuItemId != -1 && binding.bottomNav.selectedItemId != menuItemId) {
+                // ВАЖНО: isChecked = true меняет цвет, но НЕ вызывает клик (нет зацикливания)
+                binding.bottomNav.menu.findItem(menuItemId)?.isChecked = true
+            }
         }
 
         // Обработка входящей ссылки (Deep Link)
