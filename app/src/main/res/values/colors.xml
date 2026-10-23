@@ -2,4 +2,16 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="purple_primary">#A855F7</color>
+    <color name="purple_dark">#7E22CE</color>
+    <color name="bg_dark">#0F0F13</color>
+    <color name="surface_dark">#1C1C24</color>
+    <color name="text_primary">#F3F4F6</color>
+    <color name="text_secondary">#9CA3AF</color>
+
+    <!-- Для достижений и статусов -->
+    <color name="status_success">#4ADE80</color>
+    <color name="status_error">#F87171</color>
+    <color name="status_warning">#FBBF24</color>
 </resources>
