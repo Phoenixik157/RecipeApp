@@ -14,6 +14,7 @@ import com.example.application.R
 import com.example.application.data.local.entity.RecipeEntity
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
+import android.view.View
 
 object QrDialog {
 
@@ -37,18 +38,19 @@ object QrDialog {
             .create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
 
-        // Кнопки
-        view.findViewById<TextView>(R.id.closeBtn).setOnClickListener { dialog.dismiss() }
+        // Закрытие
+        view.findViewById<View>(R.id.closeBtn).setOnClickListener { dialog.dismiss() }
 
-        view.findViewById<TextView>(R.id.copyBtn).setOnClickListener {
+        // Копирование ссылки
+        view.findViewById<View>(R.id.copyBtn).setOnClickListener {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboard.setPrimaryClip(ClipData.newPlainText("recipe_link", link))
             Toast.makeText(context, "Ссылка скопирована", Toast.LENGTH_SHORT).show()
         }
 
-        view.findViewById<TextView>(R.id.savePdfBtn).setOnClickListener {
+        // Сохранение PDF
+        view.findViewById<View>(R.id.savePdfBtn).setOnClickListener {
             Toast.makeText(context, "PDF-экспорт скоро появится", Toast.LENGTH_SHORT).show()
-            // Реализуем отдельным блоком позже
         }
 
         dialog.show()
