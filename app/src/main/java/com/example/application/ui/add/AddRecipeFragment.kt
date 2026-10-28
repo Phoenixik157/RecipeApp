@@ -73,7 +73,7 @@ class AddRecipeFragment : Fragment() {
         fun updateServingsUI(newValue: Int) {
             if (isUpdatingServings) return
             isUpdatingServings = true
-            currentServings = newValue.coerceIn(1, 1488)
+            currentServings = newValue.coerceIn(1, 100)
             servingsEditText.setText(currentServings.toString())
             servingsEditText.setSelection(servingsEditText.text.length)
             servingsSeekBar.progress = currentServings - 1
@@ -88,7 +88,7 @@ class AddRecipeFragment : Fragment() {
         servingsEditText.doOnTextChanged { text, _, _, _ ->
             if (isUpdatingServings) return@doOnTextChanged
             val parsed = text?.toString()?.toIntOrNull()
-            if (parsed != null && parsed in 1..1488) {
+            if (parsed != null && parsed in 1..100) {
                 currentServings = parsed
                 isUpdatingServings = true
                 servingsSeekBar.progress = currentServings - 1
@@ -119,10 +119,10 @@ class AddRecipeFragment : Fragment() {
                 if (parsed == null || parsed < 1) {
                     // Если пусто или меньше 1 — ставим 1
                     updateServingsUI(1)
-                } else if (parsed > 1488) {
-                    // Если больше 1488 — ставим 1488
-                    updateServingsUI(1488)
-                    Toast.makeText(requireContext(), "Максимум 1488 порций", Toast.LENGTH_SHORT).show()
+                } else if (parsed > 100) {
+                    // Если больше 100 — ставим 100
+                    updateServingsUI(100)
+                    Toast.makeText(requireContext(), "Максимум 100 порций", Toast.LENGTH_SHORT).show()
                 } else {
                     // Если в пределах нормы, просто синхронизируем ползунок
                     updateServingsUI(parsed)

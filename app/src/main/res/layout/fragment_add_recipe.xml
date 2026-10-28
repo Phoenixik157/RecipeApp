@@ -246,7 +246,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="24dp"
                         android:layout_marginTop="-8dp"
-                        android:max="1487"
+                        android:max="99"
                         android:progress="0"
                         android:paddingStart="0dp"
                         android:paddingEnd="0dp"
