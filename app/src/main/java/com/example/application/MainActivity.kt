@@ -37,6 +37,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.root.alpha = 0f
+        binding.root.animate().alpha(1f).setDuration(300).start()
+
         // Инициализация БД и первичная загрузка рецептов
         lifecycleScope.launch {
             val db = AppDatabase.getInstance(applicationContext)

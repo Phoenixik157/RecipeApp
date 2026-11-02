@@ -57,12 +57,15 @@ class SettingsFragment : Fragment() {
             // Сохраняем выбор
             prefs.edit().putBoolean("dark_theme", isChecked).apply()
 
-            // Применяем тему
-            if (isChecked) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
+            // Даем анимации ползунка завершиться (около 250 мс),
+            // прежде чем пересоздавать Активити для смены темы
+            switchTheme.postDelayed({
+                if (isChecked) {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                } else {
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                }
+            }, 190)
         }
 
         // Экспорт
