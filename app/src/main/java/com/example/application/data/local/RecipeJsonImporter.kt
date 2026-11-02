@@ -52,7 +52,6 @@ object RecipeJsonImporter {
                     IngredientEntity(
                         name = name,
                         displayName = ingObj.getString("name"),
-                        emoji = "🥕",
                         synonyms = "",
                         category = "other"
                     )

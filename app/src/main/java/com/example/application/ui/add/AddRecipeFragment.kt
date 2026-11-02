@@ -133,7 +133,7 @@ class AddRecipeFragment : Fragment() {
         // --- Ингредиенты ---
         fun addIngredientRow() {
             val row = layoutInflater.inflate(R.layout.item_ingredient_row, ingredientsContainer, false)
-            row.findViewById<TextView>(R.id.deleteBtn).setOnClickListener {
+            row.findViewById<View>(R.id.deleteBtn).setOnClickListener {
                 ingredientsContainer.removeView(row)
                 ingredientRows.remove(row)
             }
@@ -260,7 +260,7 @@ class AddRecipeFragment : Fragment() {
                         row.findViewById<EditText>(R.id.ingQty).setText(qtyStr)
                         row.findViewById<EditText>(R.id.ingUnit).setText(link.unit)
                     }
-                    row.findViewById<TextView>(R.id.deleteBtn).setOnClickListener {
+                    row.findViewById<View>(R.id.deleteBtn).setOnClickListener {
                         ingredientsContainer.removeView(row)
                         ingredientRows.remove(row)
                     }

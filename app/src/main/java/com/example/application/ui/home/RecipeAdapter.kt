@@ -33,14 +33,14 @@ class RecipeAdapter(
         private val image: ImageView = itemView.findViewById(R.id.recipeImage)
         private val title: TextView = itemView.findViewById(R.id.recipeTitle)
         private val time: TextView = itemView.findViewById(R.id.recipeTime)
-        private val dot1: View = itemView.findViewById(R.id.dot1)
-        private val dot2: View = itemView.findViewById(R.id.dot2)
-        private val dot3: View = itemView.findViewById(R.id.dot3)
+        private val dot1: ImageView = itemView.findViewById(R.id.dot1)
+        private val dot2: ImageView = itemView.findViewById(R.id.dot2)
+        private val dot3: ImageView = itemView.findViewById(R.id.dot3)
         private val missing: TextView = itemView.findViewById(R.id.missingChip)
 
         fun bind(recipe: RecipeEntity, missingCount: Int) {
             title.text = recipe.title
-            time.text = "⏱ ${recipe.cookingTimeMinutes} мин"
+            time.text = "${recipe.cookingTimeMinutes} мин"
 
             if (!recipe.imageUrl.isNullOrEmpty()) {
                 image.load(recipe.imageUrl)
@@ -50,9 +50,13 @@ class RecipeAdapter(
 
             val dots = listOf(dot1, dot2, dot3)
             dots.forEachIndexed { i, dot ->
-                dot.setBackgroundColor(
-                    if (i < recipe.complexity) 0xFFFF7043.toInt() else 0xFF2C2C2C.toInt()
-                )
+                val colorRes = if (i < recipe.complexity) {
+                    R.color.purple_primary
+                } else {
+                    R.color.surface_dark // Неактивные звезды будут темными (или можно взять text_secondary)
+                }
+                // Красим саму иконку звезды
+                dot.setColorFilter(androidx.core.content.ContextCompat.getColor(itemView.context, colorRes))
             }
 
             if (missingCount > 0) {

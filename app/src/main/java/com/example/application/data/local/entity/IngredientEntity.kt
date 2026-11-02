@@ -13,7 +13,6 @@ data class IngredientEntity(
     val id: Long = 0,
     val name: String,
     val displayName: String,
-    val emoji: String = "🥕",
     val synonyms: String = "",
     val category: String = "other"
 )

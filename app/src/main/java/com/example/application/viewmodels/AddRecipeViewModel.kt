@@ -86,7 +86,6 @@ class AddRecipeViewModel(application: Application) : AndroidViewModel(applicatio
                     IngredientEntity(
                         name = name,
                         displayName = row.name.trim(),
-                        emoji = "🥕",
                         synonyms = "",
                         category = "other"
                     )

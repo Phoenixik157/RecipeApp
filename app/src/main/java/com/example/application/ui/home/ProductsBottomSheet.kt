@@ -93,38 +93,57 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
             .filter { query.isEmpty() || it.displayName.contains(query, true) }
             .groupBy { it.category }
 
+        // Убрали эмодзи из текста
         val titles = mapOf(
-            "vegetables" to "🥬 ОВОЩИ",
-            "fruits" to "🍎 ФРУКТЫ И ЯГОДЫ",
-            "meat" to "🥩 МЯСО И ПТИЦА",
-            "fish" to "🐟 РЫБА И МОРЕПРОДУКТЫ",
-            "dairy" to "🥛 МОЛОЧКА И ЯЙЦА",
-            "grocery" to "🍚 БАКАЛЕЯ",
-            "bakery" to "🍞 ХЛЕБ И ВЫПЕЧКА",
-            "greens" to "🌿 ЗЕЛЕНЬ",
-            "spices" to "🧂 СПЕЦИИ И ПРИПРАВЫ",
-            "sweets" to "🍬 СЛАДОСТИ",
-            "other" to "🍽 ПРОЧЕЕ"
+            "vegetables" to "ОВОЩИ",
+            "fruits" to "ФРУКТЫ И ЯГОДЫ",
+            "meat" to "МЯСО И ПТИЦА",
+            "fish" to "РЫБА И МОРЕПРОДУКТЫ",
+            "dairy" to "МОЛОЧКА И ЯЙЦА",
+            "grocery" to "БАКАЛЕЯ",
+            "bakery" to "ХЛЕБ И ВЫПЕЧКА",
+            "greens" to "ЗЕЛЕНЬ",
+            "spices" to "СПЕЦИИ И ПРИПРАВЫ",
+            "sweets" to "СЛАДОСТИ",
+            "other" to "ПРОЧЕЕ"
         )
 
         titles.forEach { (key, title) ->
             val items = grouped[key] ?: return@forEach
             if (items.isEmpty()) return@forEach
 
-            val header = TextView(requireContext()).apply {
+            // Создаем горизонтальный контейнер для иконки и текста
+            val headerLayout = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, 40, 0, 16) // Отступы сверху и снизу
+            }
+
+            // Добавляем цветную иконку категории
+            val iconView = ImageView(requireContext()).apply {
+                setImageResource(getCategoryIcon(key))
+                layoutParams = LinearLayout.LayoutParams(32, 32) // Размер иконки
+            }
+
+            // Добавляем текст заголовка
+            val titleText = TextView(requireContext()).apply {
                 text = title
                 setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
-                textSize = 12f
-                setPadding(0, 30, 0, 12)
-                setTypeface(null, android.graphics.Typeface.BOLD)
+                textSize = 13f
+                setTypeface(androidx.core.content.res.ResourcesCompat.getFont(requireContext(), R.font.montserrat_bold))
+                setPadding(24, 0, 0, 0) // Отступ от иконки
             }
-            container.addView(header)
 
+            headerLayout.addView(iconView)
+            headerLayout.addView(titleText)
+            container.addView(headerLayout)
+
+            // Отрисовка самих ингредиентов (остается без изменений)
             items.forEach { ingredient ->
                 val row = layoutInflater.inflate(R.layout.item_product_checkbox, container, false)
                 val checkBox = row.findViewById<ImageView>(R.id.checkBox)
                 val name = row.findViewById<TextView>(R.id.productName)
-                name.text = ingredient.displayName
+                name.text = com.example.application.utils.TextUtils.capitalize(ingredient.displayName)
 
                 fun update() {
                     val checked = selectedIds.contains(ingredient.id)
@@ -138,7 +157,7 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
                         name.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
                     }
                 }
-                update() // Вызывается сразу при создании строки
+                update()
 
                 row.setOnClickListener {
                     if (selectedIds.contains(ingredient.id)) {
@@ -157,6 +176,22 @@ class ProductsBottomSheet : BottomSheetDialogFragment() {
 
     private fun updateCounter(btn: TextView?) {
         btn?.text = "Показать рецепты (${selectedIds.size})"
+    }
+
+    private fun getCategoryIcon(category: String): Int {
+        return when (category) {
+            "vegetables" -> R.drawable.ic_cat_vegetables
+            "fruits" -> R.drawable.ic_cat_fruits
+            "meat" -> R.drawable.ic_cat_meat
+            "fish" -> R.drawable.ic_cat_fish
+            "dairy" -> R.drawable.ic_cat_dairy
+            "grocery" -> R.drawable.ic_cat_grocery
+            "bakery" -> R.drawable.ic_cat_bakery
+            "greens" -> R.drawable.ic_cat_greens
+            "spices" -> R.drawable.ic_cat_spices
+            "sweets" -> R.drawable.ic_cat_sweets
+            else -> R.drawable.ic_cat_other
+        }
     }
 
     override fun onStart() {

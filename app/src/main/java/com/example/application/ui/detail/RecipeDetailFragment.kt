@@ -1,13 +1,17 @@
 package com.example.application.ui.detail
 
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -16,6 +20,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import coil.load
 import com.example.application.R
+import com.example.application.utils.TextUtils
 import com.example.application.viewmodels.RecipeDetailViewModel
 import kotlinx.coroutines.launch
 
@@ -52,24 +57,29 @@ class RecipeDetailFragment : Fragment() {
             viewLifecycleOwner.lifecycleScope.launch {
                 val xp = viewModel.awardCooked(recipe.id, viewModel.servings.value)
                 val msg = if (xp > 0) "Приготовлено! +$xp XP" else "Записано. Лимит XP на сегодня исчерпан"
-                Toast.makeText(requireContext(), msg, android.widget.Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
             }
         }
 
-        // Рецепт
+        // Подписка на рецепт
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.recipe.collect { recipe ->
-                    recipe ?: return@collect
-                    view.findViewById<TextView>(R.id.titleText).text = recipe.title
-                    view.findViewById<TextView>(R.id.timeChip).text = "⏱ ${recipe.cookingTimeMinutes} мин"
-                    view.findViewById<TextView>(R.id.difficultyChip).text = starsFor(recipe.complexity)
-                    view.findViewById<TextView>(R.id.instructionsText).text = recipe.instructions
+                launch {
+                    viewModel.recipe.collect { recipe ->
+                        recipe ?: return@collect
+                        view.findViewById<TextView>(R.id.titleText).text = recipe.title
+                        view.findViewById<TextView>(R.id.timeChip).text = "⏱ ${recipe.cookingTimeMinutes} мин"
+                        view.findViewById<TextView>(R.id.difficultyChip).text = starsFor(recipe.complexity)
+                        view.findViewById<TextView>(R.id.instructionsText).text = recipe.instructions
 
-                    if (!recipe.imageUrl.isNullOrEmpty()) {
-                        view.findViewById<android.widget.ImageView>(R.id.heroImage).load(recipe.imageUrl)
+                        if (!recipe.imageUrl.isNullOrEmpty()) {
+                            view.findViewById<ImageView>(R.id.heroImage).load(recipe.imageUrl)
+                        }
                     }
+                }
 
+                // Отдельная подписка на название категории (без вложенности)
+                launch {
                     viewModel.categoryName.collect { catName ->
                         view.findViewById<TextView>(R.id.categoryText).text = catName
                     }
@@ -96,16 +106,13 @@ class RecipeDetailFragment : Fragment() {
             }
         }
 
+        // Уведомления о достижениях
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 com.example.application.utils.AchievementManager.newlyUnlocked.collect { list ->
                     list.forEach { id ->
                         val title = com.example.application.utils.AchievementManager.TITLES[id] ?: id
-                        android.widget.Toast.makeText(
-                            requireContext(),
-                            "🏆 Достижение: $title",
-                            android.widget.Toast.LENGTH_LONG
-                        ).show()
+                        Toast.makeText(requireContext(), "🏆 Достижение: $title", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -130,17 +137,34 @@ class RecipeDetailFragment : Fragment() {
                 setPadding(40, 40, 40, 40)
             }
 
-            val emoji = TextView(requireContext()).apply {
-                text = item.ingredient.emoji
-                textSize = 20f
+            // Иконка категории
+            val catColor = getCategoryColor(item.ingredient.category)
+            val catIcon = getCategoryIcon(item.ingredient.category)
+
+            val iconContainer = LinearLayout(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(48, 48)
+                gravity = Gravity.CENTER
+                val bg = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(catColor)
+                }
+                background = bg
             }
 
+            val iconView = ImageView(requireContext()).apply {
+                setImageResource(catIcon)
+                setColorFilter(Color.WHITE)
+                layoutParams = LinearLayout.LayoutParams(24, 24)
+            }
+            iconContainer.addView(iconView)
+
             val name = TextView(requireContext()).apply {
-                text = item.ingredient.displayName
-                setTextColor(0xFFFFFFFF.toInt())
+                text = TextUtils.capitalize(item.ingredient.displayName)
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.text_primary))
                 textSize = 14f
+                setTypeface(androidx.core.content.res.ResourcesCompat.getFont(requireContext(), R.font.inter_regular))
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
-                setPadding(28, 0, 0, 0)
+                setPadding(24, 0, 0, 0)
             }
 
             val qty = (item.quantity * ratio).let {
@@ -149,28 +173,29 @@ class RecipeDetailFragment : Fragment() {
 
             val measure = TextView(requireContext()).apply {
                 text = if (item.quantity > 0) "$qty ${item.unit}" else item.unit
-                setTextColor(0xFF9E9E9E.toInt())
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.text_secondary))
                 textSize = 13f
+                setTypeface(androidx.core.content.res.ResourcesCompat.getFont(requireContext(), R.font.inter_regular))
                 setPadding(0, 0, 20, 0)
             }
 
-            // Статус: есть / нет
             // Статус: есть / нет / замена
             val status = TextView(requireContext()).apply {
                 textSize = 18f
+                setTypeface(androidx.core.content.res.ResourcesCompat.getFont(requireContext(), R.font.inter_regular))
                 if (item.haveIt) {
                     text = "✅"
                 } else if (item.replacement != null) {
                     text = "🔄 ${item.replacement}"
-                    setTextColor(0xFFFFA000.toInt())
-                    textSize = 12f // поменьше размер для текста
+                    setTextColor(Color.parseColor("#FFA000"))
+                    textSize = 12f
                     setTypeface(null, android.graphics.Typeface.BOLD)
                 } else {
                     text = "❌"
                 }
             }
 
-            row.addView(emoji)
+            row.addView(iconContainer)
             row.addView(name)
             row.addView(measure)
             row.addView(status)
@@ -181,7 +206,7 @@ class RecipeDetailFragment : Fragment() {
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, 2
                     )
-                    setBackgroundColor(0xFF2C2C2C.toInt())
+                    setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.surface_dark))
                 }
                 container.addView(divider)
             }
@@ -192,5 +217,33 @@ class RecipeDetailFragment : Fragment() {
         1 -> "★☆☆"
         2 -> "★★☆"
         else -> "★★★"
+    }
+
+    // Вспомогательные функции для иконок категорий (скопированы из HomeFragment)
+    private fun getCategoryIcon(category: String): Int {
+        return when (category) {
+            "vegetables" -> R.drawable.ic_cat_vegetables
+            "fruits" -> R.drawable.ic_cat_fruits
+            "meat" -> R.drawable.ic_cat_meat
+            "fish" -> R.drawable.ic_cat_fish
+            "dairy" -> R.drawable.ic_cat_dairy
+            "grocery" -> R.drawable.ic_cat_grocery
+            "bakery" -> R.drawable.ic_cat_bakery
+            "greens" -> R.drawable.ic_cat_greens
+            "spices" -> R.drawable.ic_cat_spices
+            "sweets" -> R.drawable.ic_cat_sweets
+            else -> R.drawable.ic_cat_other
+        }
+    }
+
+    private fun getCategoryColor(category: String): Int {
+        return when (category) {
+            "vegetables", "greens", "fruits" -> Color.parseColor("#4CAF50")
+            "meat", "fish" -> Color.parseColor("#F44336")
+            "dairy" -> Color.parseColor("#03A9F4")
+            "grocery", "bakery" -> Color.parseColor("#FF9800")
+            "spices", "sweets" -> Color.parseColor("#E91E63")
+            else -> Color.parseColor("#9C27B0")
+        }
     }
 }
