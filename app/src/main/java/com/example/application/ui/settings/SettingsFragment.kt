@@ -5,17 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Switch
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import com.example.application.R
 import com.example.application.viewmodels.SettingsViewModel
-import kotlinx.coroutines.launch
-
 
 class SettingsFragment : Fragment() {
 
@@ -25,7 +20,7 @@ class SettingsFragment : Fragment() {
         ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
         uri ?: return@registerForActivityResult
-        viewModel.exportToJson(uri) { success, msg ->
+        viewModel.exportToJson(uri) { _, msg ->
             Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
         }
     }
@@ -35,7 +30,7 @@ class SettingsFragment : Fragment() {
         ActivityResultContracts.OpenDocument()
     ) { uri ->
         uri ?: return@registerForActivityResult
-        viewModel.importFromJson(uri) { success, msg ->
+        viewModel.importFromJson(uri) { _, msg ->
             Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
         }
     }
@@ -49,22 +44,22 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Экспорт
-        view.findViewById<android.widget.LinearLayout>(R.id.rowExport).setOnClickListener {
+        view.findViewById<View>(R.id.rowExport).setOnClickListener {
             exportLauncher.launch("recipe_backup.json")
         }
 
         // Импорт
-        view.findViewById<android.widget.LinearLayout>(R.id.rowImport).setOnClickListener {
+        view.findViewById<View>(R.id.rowImport).setOnClickListener {
             importLauncher.launch(arrayOf("application/json"))
         }
 
         // Очистка
-        view.findViewById<android.widget.LinearLayout>(R.id.rowClear).setOnClickListener {
+        view.findViewById<View>(R.id.rowClear).setOnClickListener {
             AlertDialog.Builder(requireContext())
                 .setTitle("Очистить все данные?")
                 .setMessage("Ваши рецепты, история и прогресс будут удалены безвозвратно. Базовые рецепты восстановятся автоматически.")
                 .setPositiveButton("Очистить") { _, _ ->
-                    viewModel.clearAllData { success, msg ->
+                    viewModel.clearAllData { _, msg ->
                         Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
                     }
                 }
