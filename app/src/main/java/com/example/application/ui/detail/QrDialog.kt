@@ -50,7 +50,10 @@ object QrDialog {
 
         // Сохранение PDF
         view.findViewById<View>(R.id.savePdfBtn).setOnClickListener {
-            Toast.makeText(context, "PDF-экспорт скоро появится", Toast.LENGTH_SHORT).show()
+            com.example.application.utils.PdfGenerator.generateRecipePdf(context, recipe) { success, msg ->
+                Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+            }
+            dialog.dismiss()
         }
 
         dialog.show()
