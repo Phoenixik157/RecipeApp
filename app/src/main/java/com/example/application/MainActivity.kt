@@ -24,6 +24,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private var downX = 0f
+    private var downY = 0f
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Применяем тему до создания Activity
         val prefs = getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
@@ -55,30 +58,51 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.navHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // 1. Стандартная привязка (обрабатывает клики по вкладкам и сохраняет стек)
-        binding.bottomNav.setupWithNavController(navController)
+        // Список ID наших вкладок по порядку
+        val tabs = listOf(R.id.nav_home, R.id.nav_myrecipes, R.id.nav_add_recipe, R.id.nav_stats, R.id.nav_settings)
+        var lastSelectedId = R.id.nav_home
 
-        // 2. Слушатель для умной подсветки вкладок
+        // Умное переключение с анимацией сдвига
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            val oldIndex = tabs.indexOf(lastSelectedId)
+            val newIndex = tabs.indexOf(item.itemId)
+            lastSelectedId = item.itemId
+
+            // Определяем направление анимации (вправо или влево)
+            val isForward = newIndex > oldIndex
+
+            val enterAnim = if (isForward) R.anim.slide_in_right else R.anim.slide_in_left
+            val exitAnim = if (isForward) R.anim.slide_out_left else R.anim.slide_out_right
+            val popEnterAnim = if (isForward) R.anim.slide_in_left else R.anim.slide_in_right
+            val popExitAnim = if (isForward) R.anim.slide_out_right else R.anim.slide_out_left
+
+            val navOptions = androidx.navigation.NavOptions.Builder()
+                .setLaunchSingleTop(true)
+                .setPopUpTo(navController.graph.startDestinationId, false)
+                .setEnterAnim(enterAnim)
+                .setExitAnim(exitAnim)
+                .setPopEnterAnim(popEnterAnim)
+                .setPopExitAnim(popExitAnim)
+                .build()
+
+            navController.navigate(item.itemId, null, navOptions)
+            true
+        }
+
+        // Слушатель для подсветки (оставляем как было)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            // Проверяем, откуда мы пришли на экран рецепта
             val isFromMyRecipes = navController.previousBackStackEntry?.destination?.id == R.id.nav_myrecipes
-
             val menuItemId = when (destination.id) {
                 R.id.nav_home -> R.id.nav_home
                 R.id.nav_myrecipes -> R.id.nav_myrecipes
+                R.id.nav_add_recipe -> R.id.nav_add_recipe
                 R.id.nav_stats -> R.id.nav_stats
                 R.id.nav_settings -> R.id.nav_settings
-                R.id.nav_add_recipe -> R.id.nav_add_recipe
                 R.id.nav_recipe_detail -> if (isFromMyRecipes) R.id.nav_myrecipes else R.id.nav_home
                 else -> -1
             }
-
-            // Если экран не относится ни к одной вкладке (например, детали рецепта),
-            // подсвечиваем ту, из которой пришли (isFromMyRecipes)
-            if (menuItemId != -1) {
-                if (binding.bottomNav.selectedItemId != menuItemId) {
-                    binding.bottomNav.menu.findItem(menuItemId)?.isChecked = true
-                }
+            if (menuItemId != -1 && binding.bottomNav.selectedItemId != menuItemId) {
+                binding.bottomNav.menu.findItem(menuItemId)?.isChecked = true
             }
         }
 
@@ -106,15 +130,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun dispatchTouchEvent(ev: android.view.MotionEvent?): Boolean {
-        if (ev?.action == android.view.MotionEvent.ACTION_DOWN) {
-            val view = currentFocus
-            if (view is android.widget.EditText) {
-                val outRect = android.graphics.Rect()
-                view.getGlobalVisibleRect(outRect)
-                if (!outRect.contains(ev.rawX.toInt(), ev.rawY.toInt())) {
-                    view.clearFocus()
-                    val imm = getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
-                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+        ev?.let {
+            when (it.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    downX = it.x
+                    downY = it.y
+                }
+                android.view.MotionEvent.ACTION_UP -> {
+                    val deltaX = it.x - downX
+                    val deltaY = it.y - downY
+
+                    // Если свайп горизонтальный и достаточно длинный (более 150 пикселей)
+                    if (kotlin.math.abs(deltaX) > kotlin.math.abs(deltaY) && kotlin.math.abs(deltaX) > 150) {
+                        val tabs = listOf(R.id.nav_home, R.id.nav_myrecipes, R.id.nav_add_recipe, R.id.nav_stats, R.id.nav_settings)
+                        val current = binding.bottomNav.selectedItemId
+                        val index = tabs.indexOf(current)
+
+                        if (index != -1) {
+                            if (deltaX > 0 && index > 0) {
+                                // Свайп вправо -> предыдущая вкладка
+                                binding.bottomNav.selectedItemId = tabs[index - 1]
+                            } else if (deltaX < 0 && index < tabs.size - 1) {
+                                // Свайп влево -> следующая вкладка
+                                binding.bottomNav.selectedItemId = tabs[index + 1]
+                            }
+                        }
+                    }
                 }
             }
         }
