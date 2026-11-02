@@ -19,7 +19,7 @@ data class IngredientWithQty(
     val ingredient: IngredientEntity,
     val quantity: Double,
     val unit: String,
-    val haveIt: Boolean,      // есть ли у пользователя в холодильнике
+    val haveIt: Boolean,
     val replacement: String? = null
 )
 
@@ -88,8 +88,9 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun increaseServings() { _servings.value = _servings.value + 1 }
+    fun increaseServings() { if (_servings.value < 100) _servings.value = _servings.value + 1 }
     fun decreaseServings() { if (_servings.value > 1) _servings.value = _servings.value - 1 }
+    fun setServings(value: Int) { _servings.value = value.coerceIn(1, 100) }
 
     fun awardView() {
         viewModelScope.launch {
@@ -103,7 +104,6 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
             XpManager.ACTION_COOKED
         )
 
-        // История — всегда
         db.cookingHistoryDao().insert(
             CookingHistoryEntity(
                 recipeId = recipeId,
@@ -112,7 +112,6 @@ class RecipeDetailViewModel(application: Application) : AndroidViewModel(applica
             )
         )
 
-        // Общий счётчик приготовлений — независимо от XP
         val stats = db.userStatsDao().get()
             ?: UserStatsEntity()
         db.userStatsDao().save(stats.copy(dishesCooked = stats.dishesCooked + 1))
