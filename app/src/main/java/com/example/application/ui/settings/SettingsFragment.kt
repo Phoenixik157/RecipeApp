@@ -1,12 +1,15 @@
 package com.example.application.ui.settings
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.example.application.R
@@ -25,7 +28,6 @@ class SettingsFragment : Fragment() {
         }
     }
 
-    // Лаунчер для выбора файла для импорта
     private val importLauncher = registerForActivityResult(
         ActivityResultContracts.OpenDocument()
     ) { uri ->
@@ -42,6 +44,26 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // --- НАСТРОЙКА ТЕМЫ ---
+        val switchTheme = view.findViewById<Switch>(R.id.switchDarkTheme)
+        val prefs = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+
+        // Загружаем сохраненное состояние (по умолчанию темная тема - true)
+        val isDark = prefs.getBoolean("dark_theme", true)
+        switchTheme.isChecked = isDark
+
+        switchTheme.setOnCheckedChangeListener { _, isChecked ->
+            // Сохраняем выбор
+            prefs.edit().putBoolean("dark_theme", isChecked).apply()
+
+            // Применяем тему
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
 
         // Экспорт
         view.findViewById<View>(R.id.rowExport).setOnClickListener {
