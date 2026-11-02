@@ -22,9 +22,8 @@ import com.example.application.data.local.entity.RecipeEntity
 import com.example.application.ui.home.FilterBottomSheet
 import com.example.application.ui.home.RecipeAdapter
 import com.example.application.viewmodels.MyRecipesViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.coroutines.launch
 import com.example.application.viewmodels.RecipeWithMissing
+import kotlinx.coroutines.launch
 
 class MyRecipesFragment : Fragment() {
 
@@ -51,38 +50,38 @@ class MyRecipesFragment : Fragment() {
         recycler.adapter = adapter
 
         // FAB (+)
-        view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
+        view.findViewById<View>(R.id.fabAdd).setOnClickListener {
             val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
             bottomNav.selectedItemId = R.id.nav_add_recipe
         }
 
-        // кнопка в пустом состоянии
-        view.findViewById<TextView>(R.id.createFirstBtn).setOnClickListener {
+        // Кнопка в пустом состоянии
+        view.findViewById<View>(R.id.createFirstBtn).setOnClickListener {
             val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
             bottomNav.selectedItemId = R.id.nav_add_recipe
         }
 
+        // Поиск
         view.findViewById<EditText>(R.id.searchInput).doOnTextChanged { t, _, _, _ ->
             viewModel.setQuery(t?.toString().orEmpty())
         }
 
-        // Настройка кнопки фильтров
-        view.findViewById<TextView>(R.id.filterBtn).setOnClickListener {
+        // Фильтры (ЕДИНСТВЕННЫЙ ОБРАБОТЧИК)
+        view.findViewById<View>(R.id.filterBtn).setOnClickListener {
             val sheet = FilterBottomSheet()
-            sheet.showMinPurchases = false // Отключаем режим "Минимум покупок"
-
-            // Передаем текущее состояние из ViewModel в BottomSheet
+            sheet.showMinPurchases = false
             sheet.currentSort = viewModel.sortType.value
             sheet.currentAscending = viewModel.isAscending.value
-            sheet.currentMinMode = false // Режим покупок всегда выключен здесь
+            sheet.currentMinMode = false
 
-            sheet.onApply = { sort, _, isAscending -> // minMode игнорируем
+            sheet.onApply = { sort, _, isAscending ->
                 viewModel.setSortType(sort)
                 viewModel.setAscending(isAscending)
             }
             sheet.show(parentFragmentManager, "FilterBottomSheet")
         }
 
+        // Подписка на список рецептов
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.recipes.collect { list ->
@@ -106,19 +105,6 @@ class MyRecipesFragment : Fragment() {
                 }
             }
         }
-
-        view.findViewById<TextView>(R.id.filterBtn).setOnClickListener {
-            val sheet = FilterBottomSheet()
-            sheet.showMinPurchases = false // Отключаем режим минимума покупок
-            sheet.currentSort = viewModel.sortType.value
-            sheet.currentAscending = viewModel.isAscending.value
-
-            sheet.onApply = { sort, _, isAscending -> // minMode игнорируем
-                viewModel.setSortType(sort)
-                viewModel.setAscending(isAscending)
-            }
-            sheet.show(parentFragmentManager, "FilterBottomSheet")
-        }
     }
 
     private fun openDetail(recipe: RecipeEntity) {
@@ -134,6 +120,8 @@ class MyRecipesFragment : Fragment() {
                 when (which) {
                     0 -> {
                         val bundle = Bundle().apply { putLong("recipeId", recipe.id) }
+                        val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
+                        bottomNav.selectedItemId = R.id.nav_add_recipe
                         findNavController().navigate(R.id.nav_add_recipe, bundle)
                     }
                     1 -> confirmDelete(recipe)

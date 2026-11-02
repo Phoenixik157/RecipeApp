@@ -4,59 +4,68 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="6dp"
-    android:orientation="horizontal">
+    android:layout_marginBottom="8dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
 
     <EditText
         android:id="@+id/ingName"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_weight="2.5"
-        android:background="#1E1E1E"
+        android:background="@drawable/bg_input_field"
+        android:fontFamily="@font/inter_regular"
         android:hint="Название"
         android:inputType="text"
-        android:padding="10dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#9E9E9E"
+        android:paddingHorizontal="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
         android:textSize="14sp" />
 
     <EditText
         android:id="@+id/ingQty"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_weight="1.2"
-        android:layout_marginStart="6dp"
-        android:background="#1E1E1E"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_input_field"
+        android:fontFamily="@font/inter_regular"
         android:hint="Кол-во"
         android:inputType="numberDecimal"
-        android:padding="10dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#9E9E9E"
+        android:paddingHorizontal="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
         android:textSize="14sp" />
 
     <EditText
         android:id="@+id/ingUnit"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_weight="1"
-        android:layout_marginStart="6dp"
-        android:background="#1E1E1E"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/bg_input_field"
+        android:fontFamily="@font/inter_regular"
         android:hint="Ед."
         android:inputType="text"
-        android:padding="10dp"
-        android:textColor="#FFFFFF"
-        android:textColorHint="#9E9E9E"
+        android:paddingHorizontal="12dp"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_secondary"
         android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/deleteBtn"
-        android:layout_width="38dp"
-        android:layout_height="match_parent"
+        android:layout_width="44dp"
+        android:layout_height="48dp"
         android:layout_marginStart="8dp"
         android:background="@drawable/bg_input_field"
         android:clickable="true"
         android:focusable="true"
-        android:padding="10dp"
+        android:gravity="center"
+        android:padding="12dp"
         android:src="@drawable/ic_delete"
-        app:tint="@color/text_secondary" />
+        app:tint="@color/status_error" />
+
+    <!-- Покрасил корзину в красный (@color/status_error), чтобы сразу бросалось в глаза,
+         что это кнопка удаления. Если хочешь серую, поменяй на @color/text_secondary -->
+
 </LinearLayout>
