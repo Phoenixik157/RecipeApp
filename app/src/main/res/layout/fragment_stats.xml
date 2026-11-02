@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#121212">
+    android:background="@color/bg_dark">
 
     <ScrollView
         android:layout_width="0dp"
@@ -18,381 +18,454 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="44dp"
             android:paddingBottom="90dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:text="Ваша кулинарная статистика"
-                android:textColor="#FFFFFF"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Ваша статистика"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp" />
 
-            <!-- Карточка прогресса -->
-            <LinearLayout
+            <!-- КАРТОЧКА ПРОГРЕССА -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/progressCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:background="#26FF7043"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:id="@+id/levelTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🔥 Новичок 1 ур."
-                    android:textColor="#FF7043"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+                app:cardBackgroundColor="#26A855F7"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <TextView
-                        android:id="@+id/levelXpIn"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="0 XP"
-                        android:textColor="#FFFFFF"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/levelXpTotal"
+                        android:id="@+id/levelTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="100 XP"
-                        android:textColor="#9E9E9E"
-                        android:textSize="12sp" />
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Новичок 1 ур."
+                        android:textColor="@color/purple_primary"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/levelXpIn"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/inter_regular"
+                            android:text="0 XP"
+                            android:textColor="@color/text_primary"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/levelXpTotal"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:text="100 XP"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/levelProgress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="6dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressBackgroundTint="#33A855F7"
+                        android:progressTint="@color/purple_primary" />
+
+                    <TextView
+                        android:id="@+id/cookedTotal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:fontFamily="@font/inter_regular"
+                        android:text="Всего приготовлено: 0 блюд"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/btnViewAllLevels"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Посмотреть все уровни >"
+                        android:textColor="@color/purple_primary"
+                        android:textSize="13sp" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <ProgressBar
-                    android:id="@+id/levelProgress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="6dp"
-                    android:max="100"
-                    android:progress="0"
-                    android:progressTint="#FF7043"
-                    android:progressBackgroundTint="#33FF7043" />
-
-                <TextView
-                    android:id="@+id/cookedTotal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="🍳 Всего приготовлено: 0 блюд"
-                    android:textColor="#9E9E9E"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/btnViewAllLevels"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Посмотреть все уровни >"
-                    android:textColor="#FF7043"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <!-- Дневной лимит -->
-            <LinearLayout
+            <!-- ДНЕВНОЙ ЛИМИТ -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/dailyCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="12dp"
-                android:background="#1E1E1E"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/surface_dark"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Дневной лимит XP"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:id="@+id/dailyXpBadge"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:text="Дневной лимит XP"
+                            android:textColor="@color/text_primary"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/dailyXpBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="#26A855F7"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:paddingHorizontal="10dp"
+                            android:paddingVertical="4dp"
+                            android:text="0/108"
+                            android:textColor="@color/purple_primary"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/dailyProgress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="12dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressBackgroundTint="@color/bg_dark"
+                        android:progressTint="@color/purple_primary" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="#26FF7043"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="2dp"
-                        android:text="0/108"
-                        android:textColor="#FF7043"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                        android:layout_marginTop="14dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/taskLogin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:paddingVertical="6dp"
+                            android:text="Ежедневный вход — 0/1"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/taskProducts"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:paddingVertical="6dp"
+                            android:text="Добавление продуктов — 0/5"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/taskCooked"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:paddingVertical="6dp"
+                            android:text="Приготовлено — 0/3"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/taskCreated"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:paddingVertical="6dp"
+                            android:text="Создание рецептов — 0/2"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <ProgressBar
-                    android:id="@+id/dailyProgress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="10dp"
-                    android:max="100"
-                    android:progress="0"
-                    android:progressTint="#FF7043"
-                    android:progressBackgroundTint="#2C2C2C" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/taskLogin"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingVertical="4dp"
-                        android:text="✅ Ежедневный вход — 0/1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/taskProducts"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingVertical="4dp"
-                        android:text="⚠️ Добавление продуктов — 0/5"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/taskCooked"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingVertical="4dp"
-                        android:text="✅ Приготовлено — 0/3"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/taskCreated"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingVertical="4dp"
-                        android:text="⏸ Создание рецептов — 0/2"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <!-- Быстрые метрики -->
+            <!-- БЫСТРЫЕ МЕТРИКИ -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <!-- Любимая категория -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="#1E1E1E"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="12dp">
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🏆 Любимая"
-                        android:textColor="#9E9E9E"
-                        android:textSize="11sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                    <TextView
-                        android:id="@+id/metricCategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="—"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:maxLines="3"
-                        android:ellipsize="end"
-                        android:gravity="center"/>
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:text="Любимая"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
 
-                <LinearLayout
+                        <TextView
+                            android:id="@+id/metricCategory"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="—"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Среднее время -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:background="#1E1E1E"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="12dp">
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⏱ Среднее"
-                        android:textColor="#9E9E9E"
-                        android:textSize="11sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                    <TextView
-                        android:id="@+id/metricTime"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="—"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:maxLines="3"
-                        android:ellipsize="end"
-                        android:gravity="center"/>
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:text="Среднее"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
 
-                <LinearLayout
+                        <TextView
+                            android:id="@+id/metricTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="—"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Сложность -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:background="#1E1E1E"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="12dp">
+                    app:cardBackgroundColor="@color/surface_dark"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📈 Сложность"
-                        android:textColor="#9E9E9E"
-                        android:textSize="11sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp">
 
-                    <TextView
-                        android:id="@+id/metricComplexity"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="—"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:maxLines="3"
-                        android:ellipsize="end"
-                        android:gravity="center"/>
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/inter_regular"
+                            android:text="Сложность"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/metricComplexity"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:gravity="center"
+                            android:maxLines="2"
+                            android:text="—"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Достижения -->
-            <LinearLayout
+            <!-- ДОСТИЖЕНИЯ -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/achievementsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="12dp"
-                android:background="#1E1E1E"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Достижения"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/surface_dark"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
-                    android:id="@+id/achievementsGrid"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="vertical" />
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <!-- Круговая диаграмма -->
-            <LinearLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Достижения"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:id="@+id/achievementsGrid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- КРУГОВАЯ ДИАГРАММА -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/pieCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="12dp"
-                android:background="#1E1E1E"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Распределение по категориям"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/surface_dark"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/pieChart"
-                        android:layout_width="160dp"
-                        android:layout_height="160dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Распределение по категориям"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
 
                     <LinearLayout
-                        android:id="@+id/pieLegend"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical" />
-                </LinearLayout>
-            </LinearLayout>
+                        android:layout_marginTop="12dp"
+                        android:orientation="horizontal">
 
-            <!-- Столбчатая диаграмма -->
-            <LinearLayout
+                        <com.github.mikephil.charting.charts.PieChart
+                            android:id="@+id/pieChart"
+                            android:layout_width="160dp"
+                            android:layout_height="160dp" />
+
+                        <LinearLayout
+                            android:id="@+id/pieLegend"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- СТОЛБЧАТАЯ ДИАГРАММА -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/barCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="20dp"
-                android:layout_marginTop="12dp"
-                android:background="#1E1E1E"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/surface_dark"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Блюда за последние 7 дней"
-                    android:textColor="#FFFFFF"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/barChart"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
-                    android:layout_marginTop="12dp" />
-            </LinearLayout>
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <!-- Заглушка пустого состояния -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Блюда за последние 7 дней"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="180dp"
+                        android:layout_marginTop="16dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ЗАГЛУШКА ПУСТОГО СОСТОЯНИЯ -->
             <LinearLayout
                 android:id="@+id/emptyBlock"
                 android:layout_width="match_parent"
@@ -403,19 +476,20 @@
                 android:padding="32dp"
                 android:visibility="gone">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🍽"
-                    android:textSize="56sp" />
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/ic_empty_book"
+                    app:tint="@color/text_secondary" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:fontFamily="@font/inter_regular"
                     android:gravity="center"
                     android:text="Пока вы не приготовили ни одного блюда.\nНачните с поиска!"
-                    android:textColor="#9E9E9E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>
 
