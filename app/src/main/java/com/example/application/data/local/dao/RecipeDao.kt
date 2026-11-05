@@ -63,4 +63,7 @@ interface RecipeDao {
 
     @Query("DELETE FROM recipes WHERE isUserRecipe = 1")
     suspend fun deleteAllUserRecipes()
+
+    @Query("SELECT COUNT(*) FROM recipes")
+    fun getRecipeCountFlow(): Flow<Int>
 }

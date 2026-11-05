@@ -52,6 +52,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _isAscending = MutableStateFlow(true)
     val isAscending: StateFlow<Boolean> = _isAscending
 
+    // Лимит отображения (сколько рецептов показываем за раз)
+    private val _displayLimit = MutableStateFlow(5)
+    val displayLimit: StateFlow<Int> = _displayLimit
+
+    // Функция для загрузки следующей порции
+    fun loadMore() {
+        _displayLimit.value = _displayLimit.value + 5
+    }
+
+    // Функция для сброса (при поиске или фильтрации)
+    fun resetLimit() {
+        _displayLimit.value = 5
+    }
+
     val categories: StateFlow<List<CategoryEntity>> = db.categoryDao()
         .getAll()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -65,15 +79,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _searchQuery,
         _minPurchasesMode,
         _sortType,
-        _isAscending
+        _isAscending,
+        _displayLimit // <--- ВАЖНО: добавили в combine, чтобы список обновлялся
     ) { values ->
-        // values[0] - all, values[1] - category, ...
         val all = values[0] as List<RecipeWithMissing>
         val categoryId = values[1] as Long?
         val query = values[2] as String
         val minMode = values[3] as Boolean
         val sort = values[4] as SortType
         val asc = values[5] as Boolean
+        val limit = values[6] as Int
 
         val filtered = all.filter { item ->
             val r = item.recipe
@@ -93,24 +108,36 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         val finalComparator = if (asc) comparator else comparator.reversed()
 
         // Применяем сортировку
-        if (minMode) {
-            // Если включен "Минимум покупок":
-            // Сначала сортируем по недостающим продуктам,
-            // а если их одинаковое количество — применяем выбранную сортировку
+        val sorted = if (minMode) {
             filtered.sortedWith(compareBy<RecipeWithMissing> { it.missingCount }.then(finalComparator))
         } else {
-            // Обычная сортировка
             filtered.sortedWith(finalComparator)
         }
+
+        // Обрезаем список по лимиту отображения!
+        sorted.take(limit)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    init {
-        viewModelScope.launch {
-            db.recipeDao().getAll().collect {
-                recalculateMissing()
-            }
+    private var hasLoadedOnce = false
+
+    fun ensureLoaded() {
+        if (!hasLoadedOnce) {
+            hasLoadedOnce = true
+            recalculateMissing()
         }
     }
+
+//    init {
+//        // Отслеживаем только изменение КОЛИЧЕСТВА рецептов (добавление / удаление),
+//        // чтобы не пересчитывать всю базу при каждом редактировании.
+//        viewModelScope.launch {
+//            db.recipeDao().getRecipeCountFlow().collect {
+//                if (hasLoadedOnce) {
+//                    recalculateMissing()
+//                }
+//            }
+//        }
+//    }
 
     /** Пересчитывает, сколько ингредиентов не хватает для каждого рецепта. */
     fun recalculateMissing() {
@@ -143,9 +170,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         if (enabled) {
             viewModelScope.launch {
-                db.usageCounterDao().increment(com.example.application.utils.AchievementManager.KEY_MIN_PURCHASES)
-                com.example.application.utils.XpManager.award(db, com.example.application.utils.XpManager.ACTION_MIN_PURCHASES)
-                com.example.application.utils.AchievementManager.checkAll(db)
+                db.usageCounterDao().increment(AchievementManager.KEY_MIN_PURCHASES)
+                XpManager.award(db, XpManager.ACTION_MIN_PURCHASES)
+                AchievementManager.checkAll(db)
             }
         }
     }
