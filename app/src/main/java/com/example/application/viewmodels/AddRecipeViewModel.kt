@@ -14,8 +14,8 @@ import kotlinx.coroutines.launch
 import com.example.application.utils.XpManager
 import com.example.application.utils.AchievementManager
 
-/** Строка ингредиента в форме. */
 data class IngredientRow(
+    val id: String = java.util.UUID.randomUUID().toString(),
     var name: String = "",
     var quantity: String = "",
     var unit: String = ""
@@ -31,7 +31,18 @@ class AddRecipeViewModel(application: Application) : AndroidViewModel(applicatio
     private val _saved = MutableStateFlow(false)
     val saved: StateFlow<Boolean> = _saved
 
-    private var editingRecipeId: Long? = null
+    // --- СОСТОЯНИЕ ФОРМЫ ---
+    val title = MutableStateFlow("")
+    val timeMinutes = MutableStateFlow("")
+    val instructions = MutableStateFlow("")
+    val difficulty = MutableStateFlow(2)
+    val servings = MutableStateFlow(1)
+    val selectedCategoryName = MutableStateFlow("")
+    val ingredientRows = MutableStateFlow<List<IngredientRow>>(
+        listOf(IngredientRow(), IngredientRow(), IngredientRow())
+    )
+
+    var editingRecipeId: Long? = null
 
     init {
         viewModelScope.launch {
@@ -39,12 +50,49 @@ class AddRecipeViewModel(application: Application) : AndroidViewModel(applicatio
         }
     }
 
-    /** Загружает данные, если мы редактируем существующий рецепт. */
-    suspend fun loadForEdit(recipeId: Long): RecipeEntity? {
-        editingRecipeId = recipeId
-        return db.recipeDao().getById(recipeId)
+    /** Очищает форму (вызывается при отмене или после сохранения) */
+    fun clearState() {
+        title.value = ""
+        timeMinutes.value = ""
+        instructions.value = ""
+        difficulty.value = 2
+        servings.value = 1
+        selectedCategoryName.value = ""
+        ingredientRows.value = listOf(IngredientRow(), IngredientRow(), IngredientRow())
+        editingRecipeId = null
+        _saved.value = false
     }
 
+    /** Загружает данные рецепта в ViewModel для редактирования */
+    suspend fun loadForEdit(recipeId: Long): RecipeEntity? {
+        editingRecipeId = recipeId
+        val recipe = db.recipeDao().getById(recipeId) ?: return null
+
+        title.value = recipe.title
+        timeMinutes.value = recipe.cookingTimeMinutes.toString()
+        instructions.value = recipe.instructions
+        difficulty.value = recipe.complexity
+        servings.value = recipe.baseServings
+
+        val cat = db.categoryDao().getById(recipe.categoryId)
+        selectedCategoryName.value = cat?.name ?: ""
+
+        val links = db.recipeIngredientDao().getByRecipeId(recipeId)
+        val ids = links.map { it.ingredientId }
+        val ings = db.ingredientDao().getByIds(ids)
+        val map = ings.associateBy { it.id }
+
+        ingredientRows.value = links.map { link ->
+            val ing = map[link.ingredientId]
+            IngredientRow(
+                name = ing?.displayName ?: "",
+                quantity = if (link.quantity % 1.0 == 0.0) link.quantity.toInt().toString() else link.quantity.toString(),
+                unit = link.unit
+            )
+        }.ifEmpty { listOf(IngredientRow(), IngredientRow(), IngredientRow()) }
+
+        return recipe
+    }
 
     fun save(
         title: String,
@@ -73,10 +121,8 @@ class AddRecipeViewModel(application: Application) : AndroidViewModel(applicatio
                 db.recipeDao().insert(recipe)
             }
 
-            // Сначала удаляем старые связи (при редактировании)
             db.recipeIngredientDao().deleteByRecipeId(recipeId)
 
-            // Создаём ингредиенты и связи
             val links = mutableListOf<RecipeIngredientEntity>()
             ingredients.forEach { row ->
                 val name = row.name.trim().lowercase()

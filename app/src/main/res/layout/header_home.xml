@@ -160,10 +160,23 @@
                 android:background="@null"
                 android:fontFamily="@font/inter_regular"
                 android:hint="Поиск по названию блюда..."
+                android:imeOptions="actionSearch"
                 android:inputType="text"
+                android:nextFocusDown="@null"
                 android:textColor="@color/text_primary"
                 android:textColorHint="@color/text_secondary"
                 android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/clearSearchBtn"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="4dp"
+                android:src="@drawable/ic_close"
+                android:visibility="gone"
+                app:tint="@color/text_secondary" />
         </LinearLayout>
 
         <ImageView

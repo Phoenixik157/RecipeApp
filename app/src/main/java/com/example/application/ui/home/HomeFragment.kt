@@ -1,11 +1,15 @@
 package com.example.application.ui.home
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -40,23 +44,23 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Сбрасываем лимит и загружаем данные
         viewModel.resetLimit()
-        viewModel.recalculateMissing()
+        // ВАЖНО: используем ensureLoaded, чтобы не грузить базу при каждом возврате
+        viewModel.ensureLoaded()
 
         val mainRecycler = view.findViewById<RecyclerView>(R.id.mainRecycler)
         val fabTop = view.findViewById<FloatingActionButton>(R.id.fabScrollTop)
 
-        // 1. СНАЧАЛА УСТАНАВЛИВАЕМ LAYOUT MANAGER (это предотвращает вылет!)
+        // 1. СНАЧАЛА LAYOUT MANAGER
         mainRecycler.layoutManager = LinearLayoutManager(requireContext())
 
-        // 2. ТЕПЕРЬ НАДУВАЕМ ШАПКУ (передаем mainRecycler, а не null, чтобы она заняла всю ширину!)
+        // 2. НАДУВАЕМ ШАПКУ
         val headerView = layoutInflater.inflate(R.layout.header_home, mainRecycler, false)
 
-        // 3. Настраиваем элементы внутри шапки
+        // 3. Настраиваем шапку
         setupHeader(headerView)
 
-        // 4. Адаптер для рецептов
+        // 4. Адаптер рецептов
         val recipeAdapter = RecipeAdapter(
             onClick = { recipe ->
                 val bundle = Bundle().apply { putLong("recipeId", recipe.id) }
@@ -64,33 +68,26 @@ class HomeFragment : Fragment() {
             }
         )
 
-        // 5. Склеиваем шапку и рецепты
+        // 5. Склеиваем
         val headerAdapter = HeaderAdapter(headerView)
         val concatAdapter = ConcatAdapter(headerAdapter, recipeAdapter)
-
-        // 6. Устанавливаем адаптер
         mainRecycler.adapter = concatAdapter
 
-        // 7. Бесшовный бесконечный скролл
+        // 6. Бесконечный скролл
         mainRecycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                // Кнопка наверх
                 if (dy > 0 && recyclerView.computeVerticalScrollOffset() > 500) fabTop.show() else fabTop.hide()
 
-                // Дозагрузка (только когда листаем вниз)
                 if (dy > 0) {
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val totalItemCount = layoutManager.itemCount
                     val lastVisibleItem = layoutManager.findLastVisibleItemPosition()
 
-                    // Если до конца списка осталось 3 элемента — грузим еще
                     if (lastVisibleItem >= totalItemCount - 3) {
                         val currentList = viewModel.recipes.value
                         val currentLimit = viewModel.displayLimit.value
-
-                        // Защита от спама дозагрузкой
                         if (currentList.size >= currentLimit) {
                             viewModel.loadMore()
                         }
@@ -101,25 +98,54 @@ class HomeFragment : Fragment() {
 
         fabTop.setOnClickListener { mainRecycler.smoothScrollToPosition(0) }
 
-        // FAB
         view.findViewById<FloatingActionButton>(R.id.fabAdd).setOnClickListener {
             val bottomNav = requireActivity().findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNav)
             bottomNav.selectedItemId = R.id.nav_add_recipe
         }
 
-        // Подписки на данные
-        setupObservers(headerView, recipeAdapter)
+        setupObservers(headerView, recipeAdapter, mainRecycler)
     }
 
     private fun setupHeader(headerView: View) {
-        // Поиск
         val searchInput = headerView.findViewById<EditText>(R.id.searchInput)
+        val clearBtn = headerView.findViewById<ImageView>(R.id.clearSearchBtn)
+
+        // Восстанавливаем текст из ViewModel, чтобы не было рассинхрона
+        if (searchInput.text.toString() != viewModel.searchQuery.value) {
+            searchInput.setText(viewModel.searchQuery.value)
+            searchInput.setSelection(searchInput.text.length)
+        }
+
+        // Начальная видимость крестика
+        clearBtn.visibility = if (searchInput.text.isNullOrEmpty()) View.GONE else View.VISIBLE
+
+        // Клик по крестику — очищаем поле
+        clearBtn.setOnClickListener {
+            searchInput.text.clear()
+        }
+
+        // ПЕРЕХВАТ КНОПКИ ENTER/SEARCH НА КЛАВИАТУРЕ (предотвращает вылет focus search)
+        searchInput.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+            ) {
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+                v.clearFocus()
+                true // Сообщаем, что мы сами обработали нажатие
+            } else {
+                false
+            }
+        }
+
         searchInput.doOnTextChanged { text, _, _, _ ->
+            // Скрываем/показываем крестик
+            clearBtn.visibility = if (text.isNullOrEmpty()) View.GONE else View.VISIBLE
+
             viewModel.resetLimit()
             viewModel.setSearchQuery(text?.toString().orEmpty())
         }
 
-        // Фильтры
         headerView.findViewById<View>(R.id.filterBtn).setOnClickListener {
             val sheet = FilterBottomSheet()
             sheet.currentSort = viewModel.sortType.value
@@ -135,7 +161,6 @@ class HomeFragment : Fragment() {
             sheet.show(parentFragmentManager, "FilterBottomSheet")
         }
 
-        // Ингредиенты
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 val db = com.example.application.data.local.AppDatabase.getInstance(requireContext())
@@ -144,7 +169,6 @@ class HomeFragment : Fragment() {
                     val ingredientsRow = headerView.findViewById<LinearLayout>(R.id.ingredientsRow)
                     ingredientsRow.removeAllViews()
 
-                    // Кнопка "Добавить"
                     val addBtn = LinearLayout(requireContext()).apply {
                         orientation = LinearLayout.VERTICAL
                         gravity = android.view.Gravity.CENTER_HORIZONTAL
@@ -177,7 +201,6 @@ class HomeFragment : Fragment() {
                     addBtn.setOnClickListener { openProductsSheet() }
                     ingredientsRow.addView(addBtn)
 
-                    // Сами ингредиенты
                     ings.forEach { ing ->
                         val item = LinearLayout(requireContext()).apply {
                             orientation = LinearLayout.VERTICAL
@@ -246,15 +269,15 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setupObservers(headerView: View, adapter: RecipeAdapter) {
-        // Рецепты
+    private fun setupObservers(headerView: View, adapter: RecipeAdapter, recycler: RecyclerView) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.recipes.collect { list -> adapter.submitList(list) }
+                viewModel.recipes.collect { list ->
+                    recycler.post { adapter.submitList(list) }
+                }
             }
         }
 
-        // XP
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.userStats.collect { stats ->
@@ -271,7 +294,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Категории (чипсы)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.categories.collect { categories ->
@@ -287,7 +309,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // Достижения
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 com.example.application.utils.AchievementManager.newlyUnlocked.collect { list ->

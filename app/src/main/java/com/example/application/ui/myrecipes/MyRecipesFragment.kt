@@ -1,11 +1,16 @@
 package com.example.application.ui.myrecipes
 
 import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.widget.doOnTextChanged
@@ -62,11 +67,35 @@ class MyRecipesFragment : Fragment() {
         }
 
         // Поиск
-        view.findViewById<EditText>(R.id.searchInput).doOnTextChanged { t, _, _, _ ->
+        val searchInput = view.findViewById<EditText>(R.id.searchInput)
+        val clearBtn = view.findViewById<ImageView>(R.id.clearSearchBtn)
+
+        // Клик по крестику — очищаем поле
+        clearBtn.setOnClickListener {
+            searchInput.text.clear()
+        }
+
+        // Перехват кнопки Enter/Поиск на клавиатуре (защита от вылета)
+        searchInput.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH ||
+                (event != null && event.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+            ) {
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(v.windowToken, 0)
+                v.clearFocus()
+                true // Сообщаем, что мы сами обработали нажатие
+            } else {
+                false
+            }
+        }
+
+        searchInput.doOnTextChanged { t, _, _, _ ->
+            // Скрываем/показываем крестик в зависимости от наличия текста
+            clearBtn.visibility = if (t.isNullOrEmpty()) View.GONE else View.VISIBLE
             viewModel.setQuery(t?.toString().orEmpty())
         }
 
-        // Фильтры (ЕДИНСТВЕННЫЙ ОБРАБОТЧИК)
+        // Фильтры
         view.findViewById<View>(R.id.filterBtn).setOnClickListener {
             val sheet = FilterBottomSheet()
             sheet.showMinPurchases = false
